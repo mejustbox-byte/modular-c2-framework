@@ -115,5 +115,7 @@ scanner доказательством отсутствия любых секр�
 credentials и OIDC/VPN connections не настроены. Platform-managed authentication
 не копируется в project files. Сохраните результат smoke, не выводя окружение.
 
-Текущий статус: smoke, lint и форматирование проверены в текущем workspace;
-Codex Cloud не опубликован и не проверен — вход в аккаунт был отменён.
+Текущий статус: smoke, lint и форматирование прошли в текущем workspace и
+GitHub CI (push и pull_request). Пользователь сообщил о создании Codex Cloud,
+но её repository scope, настройки secrets и smoke в самой среде ещё не
+подтверждены независимой проверкой: текущий чат не имеет доступа к её настройкам.

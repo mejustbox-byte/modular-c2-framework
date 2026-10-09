@@ -9,7 +9,7 @@
 - [x] Документирован setup среды Codex Cloud для единственного репозитория.
 - [x] Стек зафиксирован в TECH-STACK.md с runtime/tool pins и lockfile.
 - [x] Offline development smoke, lint и форматирование прошли в текущем workspace.
-- [ ] CI workflow выполнен на GitHub.
+- [x] CI workflow выполнен на GitHub: push и pull_request checks прошли.
 - [ ] Среда Codex Cloud опубликована и задача в ней успешно проверена.
 
 ## 1. Контракт событий и конфигурации

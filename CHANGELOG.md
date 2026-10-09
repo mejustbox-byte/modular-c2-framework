@@ -38,5 +38,7 @@
 - Текущий workspace: 4 development smoke checks, Ruff lint/format и shell syntax
   прошли. Проверка signatures не нашла распространённых форматов secrets в
   project files; это не полный secrets audit.
-- Публикация Codex Cloud и smoke в ней не проверены: вход в аккаунт отменён.
-- GitHub CI workflow добавлен; результат будет отмечен после выполнения.
+- GitHub CI: push и pull_request workflows успешно выполнили setup, smoke,
+  Ruff lint и форматирование для первого commit этого PR.
+- Пользователь сообщил о создании Codex Cloud; привязка единственного
+  репозитория, настройки secrets и smoke внутри неё пока не проверены.
