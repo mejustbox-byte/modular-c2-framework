@@ -132,6 +132,13 @@ class Lab:
             }
         )
 
+    def _record(self, actor, request, outcome, reason):
+        try:
+            self._audit(actor, request, outcome, reason)
+        except Exception:
+            self._blocked = True
+            raise LabError("audit_failed") from None
+
     def audit(self, actor):
         identifier(actor)
         if actor not in self._memberships:
@@ -164,9 +171,9 @@ class Lab:
             if self._stopped and request.operation != "status":
                 raise LabError("agent_stopped")
         except LabError as error:
-            self._audit(actor, request, "denied", str(error))
+            self._record(actor, request, "denied", str(error))
             raise
-        self._audit(actor, request, "allowed", "authorized")
+        self._record(actor, request, "allowed", "authorized")
         self._seen.add(request.request_id)
         if request.operation == "stop":
             self._stopped = True
@@ -176,9 +183,5 @@ class Lab:
             "emit_test_event": {"fixture_id": "synthetic-login", "event": "mock_login"},
             "stop": {"state": "stopped"},
         }[request.operation]
-        try:
-            self._audit(actor, request, "completed", "mock_completed")
-        except Exception:
-            self._blocked = True
-            raise LabError("audit_failed") from None
+        self._record(actor, request, "completed", "mock_completed")
         return result

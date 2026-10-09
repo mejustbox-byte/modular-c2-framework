@@ -110,9 +110,11 @@ class CoreTests(unittest.TestCase):
 
     def test_authorization_audit_failure_prevents_effect(self):
         with patch.object(self.lab, "_audit", side_effect=OSError):
-            with self.assertRaises(OSError):
+            with self.assertRaisesRegex(LabError, "audit_failed"):
                 self.lab.execute("operator", payload("stop"))
         self.assertFalse(self.lab._stopped)
+        with self.assertRaisesRegex(LabError, "audit_blocked"):
+            self.lab.execute("operator", payload())
 
     def test_no_network_or_process_operations(self):
         with (
