@@ -96,12 +96,32 @@ with sync_playwright() as playwright:
             if actor == "admin":
                 expect(page.locator("#membership")).to_be_visible()
                 page.locator("#target").select_option("viewer")
-                page.locator("#role").select_option("operator")
-                page.get_by_role("button", name="Применить", exact=True).click()
-                expect(page.locator("#result")).to_contain_text("viewer")
-                page.locator("#role").select_option("viewer")
-                page.get_by_role("button", name="Применить", exact=True).click()
-                expect(page.locator("#result")).to_contain_text("viewer")
+                for role in ["operator", "revoke", "viewer"]:
+                    page.locator("#role").select_option(role)
+                    with page.expect_response(ORIGIN + "/api/members") as changed:
+                        page.get_by_role("button", name="Применить", exact=True).click()
+                    assert changed.value.status == 200
+                    expect(page.locator("#result")).to_contain_text("viewer")
+                    probe = launch("viewer-after-" + role, "viewer")
+                    try:
+                        target = probe.pages[0]
+                        target.goto(ORIGIN, timeout=15000)
+                        if role == "revoke":
+                            expect(target.locator("#result")).to_contain_text(
+                                "identity_unavailable"
+                            )
+                            expect(
+                                target.get_by_role("button", name="Статус", exact=True)
+                            ).to_be_disabled()
+                        else:
+                            expect(target.locator("#identity")).to_contain_text(role)
+                            ping = target.get_by_role("button", name="Ping", exact=True)
+                            if role == "operator":
+                                expect(ping).to_be_enabled()
+                            else:
+                                expect(ping).to_be_disabled()
+                    finally:
+                        probe.close()
             page.screenshot(path=str(ROOT / f"{actor}.png"), full_page=True)
             assert not errors, errors
             print(f"Firefox native mTLS UI: {actor} passed", flush=True)

@@ -24,6 +24,7 @@ sudo tar -C "$fixture_parent/pki" -cf - \
   ca.crt server.crt server.key viewer.crt viewer.key operator.crt operator.key \
   admin.crt admin.key principals.json | docker exec -i "$container_id" \
   tar -C /run/lab --no-same-owner -xf -
+docker exec "$container_id" python -c 'import platform,ssl,sqlite3; print(platform.python_version(),ssl.OPENSSL_VERSION,sqlite3.sqlite_version)'
 docker exec "$container_id" python -m unittest discover -s integration -v
 printf '%s\n' 'Contained integration, mTLS, lifecycle, audit and egress checks passed.'
 
