@@ -75,6 +75,7 @@ class ContainedTests(unittest.TestCase):
     def tearDownClass(cls):
         cls.server.terminate()
         cls.server.wait(timeout=5)
+        cls.server.stderr.close()
         # Confirm the listener is gone, without scanning any network.
         with socket.socket() as sock:
             if sock.connect_ex(("127.0.0.1", 8443)) == 0:
@@ -152,6 +153,7 @@ class ContainedTests(unittest.TestCase):
         self.assertGreater(len(json.loads(body)["events"]), 10)
         self.server.terminate()
         self.server.wait(timeout=5)
+        self.server.stderr.close()
         type(self).server = subprocess.Popen(
             [sys.executable, "-m", "mocklab.server"],
             stdout=subprocess.DEVNULL,

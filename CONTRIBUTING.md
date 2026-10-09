@@ -60,11 +60,10 @@ Reviewer проверяет соответствие scope, отсутствие
 потери аудита и сетевые ограничения проверяют отдельно от happy path.
 Уязвимости сообщайте приватно согласно [SECURITY.md](SECURITY.md).
 
-## Offline workflow: текущая реализация
+## Contained integration
 
-CLI, строгий TOML config, ephemeral identities с expiry/revocation, bounded
-SQLite journal и restart recovery реализованы. Сетевых компонентов нет.
-Действующие команды и ограничения: [OFFLINE-WORKFLOW.md](OFFLINE-WORKFLOW.md).
-Документы выше про web/API, in-memory-only ограничения и ещё планируемую
-identity/durable audit следует читать с учётом этого реализованного этапа.
-Сетевой transport, membership management и containment всё ещё не готовы.
+`bash scripts/container-checks.sh` только на контролируемом Docker host.
+Не запускайте listener в обычном workspace, не отключайте guard/mTLS и не
+публикуйте порты. PR обязан иметь smoke и container CI evidence. Не помещайте
+сгенерированную PKI, journals или runtime artifacts в Git. UI acceptance и
+остаточные ограничения описаны в VALIDATION.md.
