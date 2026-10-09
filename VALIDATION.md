@@ -2,7 +2,8 @@
 
 ## Local checks
 
-CPython 3.12.14: 30 unit/negative/restart/CLI/API tests, 4 development smoke checks,
+CPython 3.12.14: 33 tests (30 core/CLI/API and 3 release-publication tests),
+4 development smoke checks,
 Ruff 0.16.10 lint/format, shell syntax and whitespace checks passed.
 No listener started in the ordinary workspace. Core and dispatch tests are in-process.
 
@@ -18,7 +19,7 @@ replay, management/revocation, mock lifecycle, audit, restart recovery and liste
 Certificate validity is also enforced by OpenSSL; application expiry tested in-process.
 
 All five contained integration tests passed in GitHub Actions run
-[37888647153](https://github.com/mejustbox-byte/modular-c2-framework/actions/runs/37888647153)
+[37888774720](https://github.com/mejustbox-byte/modular-c2-framework/actions/runs/37888774720)
 on 2026-10-09. Smoke/unit/lint job passed as well. Provisioning failures were
 corrected by streaming selected fixture files into private tmpfs through the
 unprivileged container process, without relaxing storage/network controls.
@@ -34,4 +35,6 @@ Browser visual/mTLS testing in a user-managed isolated VM is not claimed by HTTP
 acceptance. CI validates API/asset behavior. Codex Cloud remains a development-only
 workspace with independent containment unverified; no listener runs there. Its setup
 was checked on PR #1, new branch install/start instructions need review before adoption.
-All PRs remain drafts without merging; main does not yet contain the implementation.
+Release candidate v0.1.0-rc.1 is eligible for publication after merge and successful
+main-commit smoke/container jobs. The release job depends on both checks; the release
+page identifies its exact source commit. This is not stable/production acceptance.

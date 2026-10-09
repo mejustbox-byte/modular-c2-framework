@@ -31,3 +31,21 @@ jobs:
           python-version-file: .python-version
       - name: Contained mock laboratory acceptance
         run: bash scripts/container-checks.sh
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'Release v')
+    needs: [smoke, container]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version-file: .python-version
+      - name: Publish tested source candidate
+        env:
+          GH_RELEASE_TOKEN: ${{ github.token }}
+        run: python scripts/publish-release.py

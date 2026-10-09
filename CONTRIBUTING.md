@@ -34,11 +34,11 @@ bash scripts/setup-cloud.sh
 ```
 
 Workspace проверяет репозиторий и документы. Setup дополнительно запускает
-unit/negative/CLI tests; сетевых сервисов пока нет. Development smoke и CI
+unit/negative/CLI/API dispatch tests; сетевой listener не запускается. Development smoke и CI
 описаны в TECH-STACK.md; запуск: `bash scripts/setup-cloud.sh` после bootstrap uv.
-Не утверждайте, что RBAC, loopback или egress deny проверены этим скриптом.
+RBAC проверяется unit tests; loopback, mTLS и egress — отдельным Docker job.
 
-## Тесты будущего MVP
+## Реализованный тестовый набор
 
 - Unit: схема сообщения, операции enum, fixture IDs, lifecycle и RBAC matrix.
 - Negative: неверные identities, чужая lab, неизвестная операция, oversize
@@ -67,3 +67,11 @@ Reviewer проверяет соответствие scope, отсутствие
 публикуйте порты. PR обязан иметь smoke и container CI evidence. Не помещайте
 сгенерированную PKI, journals или runtime artifacts в Git. UI acceptance и
 остаточные ограничения описаны в VALIDATION.md.
+
+## Выпуск
+
+При явном разрешении владельца завершите проверки, объедините зависимости PR
+и release PR в main. Merge title `Release v<version>` включает gated release job;
+он публикует prerelease после smoke и container success. Версии в pyproject.toml
+и uv.lock должны совпадать. Stable promotion требует оставшейся operational
+приемки; порядок и ограничения см. [RELEASE.md](RELEASE.md).

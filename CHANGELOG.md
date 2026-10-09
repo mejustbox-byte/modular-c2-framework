@@ -1,8 +1,13 @@
 # Changelog
 
-Изменения ведутся по фактическому состоянию. Релизов пока нет.
-
 ## Unreleased
+
+- Полная browser/mTLS и финальная Codex Cloud приемка перед стабильным релизом.
+
+## v0.1.0-rc.1 — 2026-10-09
+
+Первый release candidate учебного mock MVP. Публикация выполняется только после
+успешной приемки merge commit; статус и commit указаны в GitHub Releases.
 
 ### Isolated mock MVP
 
@@ -22,7 +27,7 @@
 - Fail closed после interrupted operation; private-file/symlink checks.
 - Исправлен приём UTF-16 при обязательном UTF-8 envelope.
 - Добавлены identity, storage, restart, config и CLI integration tests.
-- Полный сетевой MVP блокируется отсутствием проверенного containment runtime.
+- Contained network workflow реализован и проверен отдельным Docker CI job.
 
 ### Mock core MVP
 
@@ -30,7 +35,7 @@
 - Добавлены роли и lab scope, 60-second validity, replay guard и bounded in-memory аудит.
 - Добавлены 12 unit/negative tests, включая audit failure, capacity и отсутствие OS operations.
 - CI/setup дополнены unit tests; CORE-CONTRACT описывает реализованный контракт и ограничения.
-- Зафиксирована публикация приватной Codex Cloud для setup commit PR #1; новый commit ещё не проверен там.
+- Приватная Codex Cloud проверена на setup commit PR #1; новая версия требует отдельной Cloud приемки.
 
 ### Added
 
@@ -61,12 +66,10 @@
 - Зафиксирован учебный и изолированный scope.
 - Добавлены базовые документы проекта, MIT license и security policy.
 
-### Validation status
+### Acceptance
 
-- Текущий workspace: 4 development smoke checks, Ruff lint/format и shell syntax
-  прошли. Проверка signatures не нашла распространённых форматов secrets в
-  project files; это не полный secrets audit.
-- GitHub CI: push и pull_request workflows успешно выполнили setup, smoke,
-  Ruff lint и форматирование для первого commit этого PR.
-- Codex Cloud setup commit PR #1 проверен и среда опубликована; новый mock core
-  пока проверен локально, его Cloud/CI результаты будут подтверждены отдельно.
+- 33 tests (30 core/CLI/API + 3 mocked release tests), 4 smoke checks,
+  Ruff lint/format и shell/whitespace проверки прошли.
+- CI run 37888774720: smoke и 5 contained integration tests прошли.
+- Выпуск из main дополнительно требует обе успешные CI jobs для release commit.
+- Browser visual/mTLS и новый commit в Cloud пока не проверены.

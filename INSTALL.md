@@ -1,5 +1,11 @@
 # Installation
 
+## Source release
+
+Скачайте source archive для `v0.1.0-rc.1` с GitHub Releases или checkout tag
+в существующем клоне. Candidate — исходники, не PyPI package и не hosted service.
+Состав и ограничения: [RELEASE.md](RELEASE.md).
+
 ## Development
 
 Runtime: CPython 3.12.14, Linux. Bootstrap выполняется до отключения сети:

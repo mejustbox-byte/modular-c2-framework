@@ -18,7 +18,8 @@ and evidence; release/merge is separate from implementation.
 
 ## Operational adoption
 
-- [ ] Review draft PR chain and merge only when authorized.
+- [x] Owner authorized merging and a release after acceptance.
+- [ ] Stable release: complete browser and final Cloud operational acceptance.
 - [ ] Update Cloud install/start instructions from old pinned setup commit after review.
 - [ ] Test browser mTLS/visual interaction in the user's isolated VM, with no port exposure.
 
@@ -26,3 +27,9 @@ These adoption tasks are not claimed by local tests or HTTP asset checks.
 Full production C2, real agents, public hosting, arbitrary commands, stealth,
 persistence and defense bypass are excluded. Multi-agent scale, audit archival and
 external identity providers require a separate future scope and threat review.
+
+## Release candidate
+
+`v0.1.0-rc.1` publishes from a release merge commit only after both main CI jobs
+pass. See [RELEASE.md](RELEASE.md). The GitHub release page is authoritative for
+publication status; pending operational checks are not waived by the candidate.

@@ -14,15 +14,15 @@ acceptance workflow проверяет mTLS, RBAC и containment.
 | Прикладные зависимости | Пока отсутствуют | Smoke не требует серверов, сети или credentials; минимум supply-chain surface |
 | Тестовый стек | `unittest` из CPython 3.12.14 | Нет дополнительных пакетов для первичной проверки; unit/negative/integration tests добавляются с реализацией |
 | Линтер и форматтер | **Ruff 0.16.10** | Один инструмент вместо отдельных linter/formatter, настройки в `pyproject.toml` |
-| Контейнеризация | Docker Engine + Compose **v2**, Linux; реализован Docker CLI workflow; Compose не используется | Одна изолированная VM/namespace в первом MVP; multi-container transport требует отдельного review |
+| Контейнеризация | Docker Engine **28.0.4** в проверенном CI, Linux; Docker CLI; Compose не используется | Одна изолированная VM/namespace в первом MVP; multi-container transport требует отдельного review |
 | CI | GitHub Actions, Ubuntu 24.04 | Read-only contents permissions, bounded timeout, SHA-pinned actions, никаких пользовательских secrets |
 | Хранилище и аудит | Structured JSON events + stdlib SQLite; offline и contained API | Bounded private journal, replay/lifecycle recovery; внешняя БД не нужна |
 | UI и web framework | stdlib http.server + ssl; fixed HTML/CSS/JS | Фиксированный UI и mTLS API без прикладных dependencies |
 
 Python 3.12.14 выбран как проверенный baseline, а не заявлен как самый новый
 patch release. Runtime и инструменты обновляются отдельным PR после smoke,
-lockfile, review release notes и проверки security advisories. Перед первым
-сетевым runtime обязательна повторная проверка поддерживаемых security patches.
+lockfile, review release notes и проверки security advisories. Перед стабильным или расширенным сетевым выпуском обязательна повторная
+проверка поддерживаемых security patches; candidate сохраняет проверенный baseline.
 Dockerfile и Docker CLI acceptance workflow реализованы; runtime image pinned
 по digest, фактическая версия Docker Engine записывается в CI log.
 
@@ -88,3 +88,7 @@ Docker Engine версию сообщает acceptance log; host runner image о
 он не предназначен для публичного production hosting. UI — packaged static assets
 без CDN/build dependencies. Container integration отдельна от обычного unit setup.
 См. [API.md](API.md), [VALIDATION.md](VALIDATION.md).
+
+Release metadata: `0.1.0rc1`; Git tag `v0.1.0-rc.1`. Release job получает
+`contents: write` только для публикации из main после обоих checks; обычные
+smoke/container jobs сохраняют read-only permissions. См. [RELEASE.md](RELEASE.md).
