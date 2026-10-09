@@ -60,5 +60,3 @@ VM/namespace с браузером, доверенным lab CA и клиент�
 [RELEASE.md](RELEASE.md) описывает состав source-релиза, проверки и установку.
 Runtime обновлен до Python 3.12.15; браузерный mTLS и image audit входят в CI gates.
 Текущая приемка: [STABLE-ACCEPTANCE.md](STABLE-ACCEPTANCE.md).
-Историческая приемка rc.1 и обновления Cloud:
-[ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).
