@@ -4,8 +4,8 @@
 
 После проверки основной документации выбран минимальный Python-стек для
 изолированной mock-лаборатории. Сначала проверяем workflow без серверов и
-внешних targets. Сетевой API, UI и прикладные зависимости вводятся отдельными
-этапами после схемы сообщений, RBAC и containment tests.
+внешних targets. Сетевой API и UI реализованы поверх проверенного mock core; контейнерный
+acceptance workflow проверяет mTLS, RBAC и containment.
 
 | Слой | Выбор и версия | Обоснование |
 | --- | --- | --- |
@@ -14,17 +14,17 @@
 | Прикладные зависимости | Пока отсутствуют | Smoke не требует серверов, сети или credentials; минимум supply-chain surface |
 | Тестовый стек | `unittest` из CPython 3.12.14 | Нет дополнительных пакетов для первичной проверки; unit/negative/integration tests добавляются с реализацией |
 | Линтер и форматтер | **Ruff 0.16.10** | Один инструмент вместо отдельных linter/formatter, настройки в `pyproject.toml` |
-| Контейнеризация | Docker Engine + Compose **v2**, Linux; пока план | Одна изолированная VM/namespace в первом MVP; multi-container transport требует отдельного review |
+| Контейнеризация | Docker Engine + Compose **v2**, Linux; реализован Docker CLI workflow; Compose не используется | Одна изолированная VM/namespace в первом MVP; multi-container transport требует отдельного review |
 | CI | GitHub Actions, Ubuntu 24.04 | Read-only contents permissions, bounded timeout, SHA-pinned actions, никаких пользовательских secrets |
-| Хранилище и аудит | Structured JSON events + stdlib SQLite; offline реализация | Bounded private journal, replay/lifecycle recovery; внешняя БД не нужна |
-| UI и web framework | Отложены до API contract | Не нужны для первого smoke; не добавляем зависимости без требований и проверок |
+| Хранилище и аудит | Structured JSON events + stdlib SQLite; offline и contained API | Bounded private journal, replay/lifecycle recovery; внешняя БД не нужна |
+| UI и web framework | stdlib http.server + ssl; fixed HTML/CSS/JS | Фиксированный UI и mTLS API без прикладных dependencies |
 
 Python 3.12.14 выбран как проверенный baseline, а не заявлен как самый новый
 patch release. Runtime и инструменты обновляются отдельным PR после smoke,
 lockfile, review release notes и проверки security advisories. Перед первым
 сетевым runtime обязательна повторная проверка поддерживаемых security patches.
-Версия Docker/Compose будет зафиксирована вместе с первым проверенным образцом
-лаборатории; сейчас нет Dockerfile, образа или работающего контейнерного стенда.
+Dockerfile и Docker CLI acceptance workflow реализованы; runtime image pinned
+по digest, фактическая версия Docker Engine записывается в CI log.
 
 ## Альтернативы
 
@@ -44,9 +44,9 @@ Go удобен для компактных binaries, но пока нет за�
 - Никаких API keys, GitHub PAT, cloud credentials или private test certificates
   в репозитории и project configuration. Platform-managed authentication
   отделена от пользовательских secrets и не должна выводиться в diagnostics.
-- Для будущего стенда: non-root, read-only filesystem, dropped capabilities,
+- Реализованный стенд: non-root, read-only filesystem, dropped capabilities,
   no-new-privileges, resource limits, без host mounts/socket/network и egress deny.
-  Эти меры пока требования, а не реализованная конфигурация.
+  Конфигурация проверяется через Docker inspect до запуска API.
 
 ## Проверка выбранного стека
 
@@ -73,27 +73,18 @@ Codex Cloud считается проверенным только после з
 - [Ruff](https://docs.astral.sh/ruff/).
 - [Codex Cloud](https://learn.chatgpt.com/docs/cloud).
 
-## Реализованный этап: network-free core
+## MVP runtime
 
-Добавлен `mocklab` для in-process unit tests: фиксированные операции, строгий
-JSON envelope, lab-scoped роли, replay guard и bounded in-memory аудит.
-Действующий контракт и ограничения описаны в [CORE-CONTRACT.md](CORE-CONTRACT.md).
-Предыдущие разделы про transport, authentication, durable audit и deployment
-остаются проектными требованиями. Сетевые компоненты не реализованы.
+Dockerfile: `python:3.12.14-slim-bookworm` с digest
+`sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e`,
+полученным из фактической CI-сборки. Нет прикладных third-party dependencies.
+TLS 1.3, mTLS и SQLite предоставляет stdlib; OpenSSL CLI используется только для
+одноразовой PKI на CI host, не внутри application API. Compose не нужен: один
+контейнер, Docker CLI configuration инспектируется перед запуском.
+Docker Engine версию сообщает acceptance log; host runner image обновляется GitHub.
+Это не полностью pinned host OS/Engine: base runtime image и Python tools pinned.
 
-Проверка: `uv run --locked --offline python -m unittest discover -s tests -v`.
-Setup и CI запускают этот набор вместе с development smoke и Ruff.
-
-Codex Cloud опубликована с единственным репозиторием, доступом «Только я», без
-project/network secrets и с доменами pypi.org/files.pythonhosted.org. Setup на
-commit PR #1 прошёл; новая реализация требует отдельной проверки в этой среде.
-Enforcement сети не подтверждён; лабораторные запуски остаются запрещены.
-
-## Offline workflow: текущая реализация
-
-CLI, строгий TOML config, ephemeral identities с expiry/revocation, bounded
-SQLite journal и restart recovery реализованы. Сетевых компонентов нет.
-Действующие команды и ограничения: [OFFLINE-WORKFLOW.md](OFFLINE-WORKFLOW.md).
-Документы выше про web/API, in-memory-only ограничения и ещё планируемую
-identity/durable audit следует читать с учётом этого реализованного этапа.
-Сетевой transport, membership management и containment всё ещё не готовы.
+`http.server` выбран только для маленького single-threaded изолированного mock MVP;
+он не предназначен для публичного production hosting. UI — packaged static assets
+без CDN/build dependencies. Container integration отдельна от обычного unit setup.
+См. [API.md](API.md), [VALIDATION.md](VALIDATION.md).

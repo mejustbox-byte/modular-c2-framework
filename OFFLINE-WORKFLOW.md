@@ -53,9 +53,5 @@ Crash после allowed до completed блокирует восстановл�
 журнала, автоматического unsafe retry/reset нет. Replay хранится до конца журнала.
 SQLite гарантии durability зависят также от файловой системы и оборудования.
 
-Offline scenario завершён как отдельный этап. Полный сетевой MVP ещё не готов:
-нет listener/API, web UI, transport identity/mTLS, membership management или
-проверенного контейнерного стенда. В текущем workspace Docker отсутствует;
-network namespace isolation ранее была запрещена. Полный containment и
-IPv4/IPv6/DNS egress deny здесь проверить нельзя. Эти условия блокируют запуск
-лабораторных сетевых сервисов, а не заменяются флагом в конфиге.
+Сетевой mock MVP реализован отдельно: [API.md](API.md), [INSTALL.md](INSTALL.md).
+Этот offline workflow не открывает listener и не доказывает containment.

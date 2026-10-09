@@ -1,103 +1,51 @@
-# Modular C2 Framework
+# Modular C2 Framework — Mock Lab
 
-Учебная платформа для исследования управления **mock-агентами** в полностью
-изолированных киберучениях. Все задания используют синтетические данные и
-фиксированные тестовые операции.
+Учебная лаборатория управления **только mock-агентом**. Данные синтетические,
+операции фиксированные: `ping`, `status`, `emit_test_event`, `stop`.
+Нет shell, исполнения пользовательского кода, чтения файлов агентом, скрытности,
+persistence, обхода защиты или работы с реальными targets.
 
-## Статус
+## Реализованный MVP
 
-Реализовано первое сетево-независимое ядро `mocklab`: один synthetic mock-agent,
-строгий envelope, роли viewer/operator/lab-admin, lab scope, replay protection и
-ограниченный аудит с опциональным SQLite journal и восстановлением.
-Добавлены ephemeral identities, строгий TOML config и offline CLI с меню. Нет listener, API, UI, аутентификации transport или
-контейнерной лаборатории. Полная изоляция сети ещё не подтверждена; лабораторные
-сервисы запускать нельзя. Unit tests не открывают порты.
+- Строгий versioned JSON envelope, ограниченные ID/payload и replay protection.
+- Один deterministic mock-agent и проверяемый lifecycle.
+- Viewer/operator/lab-admin, lab scope, изменения ролей и отзыв доступа.
+- TLS 1.3 loopback API с обязательным mTLS и fingerprint pinning client certificates.
+- Локальный web UI: статус, операции, управление ролями и просмотр аудита.
+- Private bounded SQLite audit; восстановление состояния и fail closed после crash.
+- Offline CLI/menu и строгая TOML конфигурация.
+- Docker containment acceptance в CI: network none, non-root, read-only root,
+  dropped capabilities, no-new-privileges, tmpfs и resource limits.
 
-## Учебный scope
+Это ограниченный учебный MVP, не production C2 и не публичный сервис.
+Слияний пока нет: реализация находится в последовательных draft PR.
+Фактическая приемка описана в [VALIDATION.md](VALIDATION.md).
 
-- Mock-agent сообщает тестовый статус и возвращает заранее заданные результаты.
-- Операции ограничены `ping`, `status`, `emit_test_event` и `stop`.
-- Сценарии изучают авторизацию, lifecycle, отказ при неверной конфигурации,
-  журналирование и проверку containment.
-- Лаборатория запускается только в отдельной VM или изолированной контейнерной
-  сети с синтетическими данными и одноразовыми тестовыми идентификаторами.
-
-Произвольные команды, shell, загрузка исполняемых модулей, доступ к файлам
-хоста, скрытность, persistence и обход защит не входят в проект.
-
-## Безопасная модель
-
-| Контроль | Требование к реализации |
-| --- | --- |
-| Loopback | Локальный API/listener привязывается к `127.0.0.1`; `0.0.0.0` и публичная публикация портов запрещены |
-| Egress deny | Политика VM/контейнерной сети блокирует исходящий трафик, включая DNS, IPv4 и IPv6 |
-| Containment | Нет host networking, privileged-контейнеров, Docker socket, production routes и mounts с данными хоста |
-| RBAC | Каждая операция проверяет роль и границу конкретной лаборатории; default deny |
-| Аудит | Разрешённые и отклонённые действия фиксируются без секретов |
-| Fail closed | Ошибка авторизации, конфигурации или обязательного аудита блокирует операцию |
-
-Loopback не заменяет egress deny. Локальные процессы тоже могут обращаться к
-loopback; поэтому API требует аутентификацию и авторизацию.
-
-## Планируемые компоненты
-
-- Teamserver API: валидация запросов, RBAC и диспетчер фиксированных операций.
-- Локальный listener: только тестовый transport внутри лаборатории.
-- Mock-agent: никаких операций над ОС; только in-memory synthetic fixtures.
-- Audit sink: ограниченные по размеру события и локальный журнал.
-- Тестовый UI: видимость состояния и аудита, без прямого доступа к агентам.
-
-Подробности: [ARCHITECTURE.md](ARCHITECTURE.md) и
-[THREAT-MODEL.md](THREAT-MODEL.md).
-
-## Подготовка рабочего дерева
-
-Нужны Git и Bash. Прикладные зависимости пока отсутствуют.
+## Быстрый offline запуск
 
 ```bash
-git clone https://github.com/mejustbox-byte/modular-c2-framework.git
-cd modular-c2-framework
-bash scripts/check-workspace.sh
-```
-
-Это проверка репозитория и документов, а не запуск платформы и не проверка
-сетевой изоляции. [INSTALL.md](INSTALL.md) описывает подготовку среды и
-планируемую конфигурацию.
-
-## Документация и участие
-
-- [ROADMAP.md](ROADMAP.md): этапы реализации и критерии завершения.
-- [CHANGELOG.md](CHANGELOG.md): фактические изменения, без вымышленных релизов.
-- [CONTRIBUTING.md](CONTRIBUTING.md): workflow, тестирование и review.
-- [SECURITY.md](SECURITY.md): публичный OPSEC и приватное раскрытие уязвимостей.
-- [AGENTS.md](AGENTS.md): инструкции Codex для этого репозитория.
-
-Лицензия проекта — [MIT](LICENSE). Изменения разрабатываются только в
-`mejustbox-byte/modular-c2-framework`.
-
-## Стек разработки
-
-Зафиксирован CPython 3.12.14, uv 0.12.24, стандартный `unittest` и
-Ruff 0.16.10; CI — GitHub Actions. Контейнеризация Linux с Docker/Compose v2
-запланирована, лабораторного образа пока нет. Обоснование, version pins и
-критерии проверки — в [TECH-STACK.md](TECH-STACK.md).
-
-## Проверка mock-ядра
-
-```bash
-uv run --locked --offline python -m unittest discover -s tests -v
-```
-
-Контракт и ограничения: [CORE-CONTRACT.md](CORE-CONTRACT.md).
-Identity задаёт доверенный in-process адаптер; клиентские `role`/`actor_id`
-в envelope отклоняются. Это не готовая authentication boundary сетевого сервера.
-
-## Исполнимое offline-упражнение
-
-```bash
+uv sync --locked
 uv run --locked --offline python -m mocklab
 uv run --locked --offline python -m mocklab --interactive
 ```
 
-Установка, конфигурация, сохранение аудита и ограничения —
-[OFFLINE-WORKFLOW.md](OFFLINE-WORKFLOW.md). Полный сетевой MVP пока не готов.
+Для setup нужны CPython 3.12.14 и uv 0.12.24; Ruff 0.16.10 зафиксирован lockfile.
+[INSTALL.md](INSTALL.md) содержит bootstrap, контейнерные проверки и cleanup.
+
+## Сетевая лаборатория
+
+Сервер привязывается только к `127.0.0.1` и отказывается запускаться без runtime
+containment guard. Клиенты работают в том же изолированном network namespace;
+**порты на host не публикуются**. Обычный браузер хоста не может подключиться к
+network-none контейнеру. Web UI используется в отдельной проверенной изолированной
+VM/namespace с браузером, доверенным lab CA и клиентским сертификатом.
+Нельзя обходить guard или отключать проверку TLS ради подключения UI.
+
+## Документы
+
+- [TECH-STACK.md](TECH-STACK.md), [ARCHITECTURE.md](ARCHITECTURE.md).
+- [CORE-CONTRACT.md](CORE-CONTRACT.md), [API.md](API.md), [OFFLINE-WORKFLOW.md](OFFLINE-WORKFLOW.md).
+- [THREAT-MODEL.md](THREAT-MODEL.md), [SECURITY.md](SECURITY.md).
+- [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Работа только в `mejustbox-byte/modular-c2-framework`. Лицензия — [MIT](LICENSE).

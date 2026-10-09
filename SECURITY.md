@@ -1,53 +1,44 @@
 # Security Policy
 
-This is a controlled-lab research project. Use it only for authorized
-exercises, with strict network isolation, containment, logging, and cleanup.
-Never deploy agents or listeners against third-party systems.
+Authorized isolated educational exercises only. The only agent is synthetic,
+with ping/status/emit_test_event/stop. No arbitrary commands, host reconnaissance,
+stealth, persistence, defense bypass or third-party targets.
 
-Report vulnerabilities privately through GitHub Security Advisories. Do not
-include operational secrets, live infrastructure details, or weaponized
-payloads in public issues.
+## Enforced controls
 
-## Public development OPSEC
+- Loopback only; TLS 1.3; mandatory verified/pinned client certificates.
+- Server-side role and lab boundaries, expiry, revocation and replay protection.
+- Strict bounded messages, request budget, one agent and bounded audit/recovery.
+- Startup/request guard refuses root, active capabilities, missing no-new-privileges,
+  writable root or non-loopback interfaces/routes.
+- Official Docker image pinned by digest, network none, no ports/binds, private tmpfs,
+  memory/CPU/PID limits; external inspect validation precedes acceptance.
+- Fixed UI asset table, no traversal/credential storage/CORS; Host/Origin checks,
+  CSP, no-store and generic diagnostics.
 
-Use synthetic data, placeholder infrastructure and disposable test identities
-in public documentation and examples. Do not publish tokens, private keys,
-customer logs, internal hostnames, live target addresses or infrastructure
-inventories. Supply credentials only through the platform's secure credential
-or secret-management controls, never through chat, commits or PR descriptions.
+Loopback alone is not containment. Runtime guard cannot attest host mounts or a
+malicious OS owner; trusted external Docker inspection and controlled-lab ownership
+are required. Certificate authority administration is trusted. Do not bypass guards,
+TLS verification or private storage permissions. An arbitrary local Python caller
+is outside the remote authorization boundary and may alter internal objects.
 
-The repository includes a network-free in-memory mock core and development checks.
-No listener or server is implemented. Loopback binding,
-command restrictions and egress isolation are future design requirements;
-`check-workspace.sh` does not enforce containment or scan for secrets.
+## Public OPSEC
 
-Review diffs before publishing. If a credential is exposed, revoke or rotate it
-first and notify the maintainer privately; deleting a later file does not remove
-it from Git history. Use the repository's private vulnerability-reporting flow
-when available. If it is unavailable, ask the maintainer for a private reporting
-channel without disclosing vulnerability details in a public issue.
+Only synthetic fixtures and disposable one-day test PKI. Never commit tokens,
+certificates/private keys, production logs, internal hostnames or target inventories.
+PKI is created outside checkout/image; CI deletes its own disposable data.
+Platform-managed credentials are not copied to project files or diagnostics.
+Project Cloud environment contains no project/network secrets; its independent
+containment remains unverified, so network laboratory services must not run there.
 
-## Реализованный этап: network-free core
+The accidental-secret scanner is limited signatures, not a full secrets audit.
+Audit read/authentication rejection at TLS boundary is not a durable security log.
+Do not claim production security, tamper-proof auditing or protection from OS admin.
 
-Добавлен `mocklab` для in-process unit tests: фиксированные операции, строгий
-JSON envelope, lab-scoped роли, replay guard и bounded in-memory аудит.
-Действующий контракт и ограничения описаны в [CORE-CONTRACT.md](CORE-CONTRACT.md).
-Предыдущие разделы про transport, authentication, durable audit и deployment
-остаются проектными требованиями. Сетевые компоненты не реализованы.
+## Vulnerability reporting
 
-Проверка: `uv run --locked --offline python -m unittest discover -s tests -v`.
-Setup и CI запускают этот набор вместе с development smoke и Ruff.
-
-Codex Cloud опубликована с единственным репозиторием, доступом «Только я», без
-project/network secrets и с доменами pypi.org/files.pythonhosted.org. Setup на
-commit PR #1 прошёл; новая реализация требует отдельной проверки в этой среде.
-Enforcement сети не подтверждён; лабораторные запуски остаются запрещены.
-
-## Offline workflow: текущая реализация
-
-CLI, строгий TOML config, ephemeral identities с expiry/revocation, bounded
-SQLite journal и restart recovery реализованы. Сетевых компонентов нет.
-Действующие команды и ограничения: [OFFLINE-WORKFLOW.md](OFFLINE-WORKFLOW.md).
-Документы выше про web/API, in-memory-only ограничения и ещё планируемую
-identity/durable audit следует читать с учётом этого реализованного этапа.
-Сетевой transport, membership management и containment всё ещё не готовы.
+Use GitHub private Security Advisories. Do not publish weaponized payloads, live
+infrastructure or secrets in issues. If private reporting is unavailable, obtain
+an appropriate private reporting channel first. Revoke/rotate exposed credentials;
+a later deletion does not erase Git history. Stop/isolate the lab, preserve sanitized
+evidence and review incomplete journal operations before resuming.

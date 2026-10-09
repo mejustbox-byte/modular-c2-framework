@@ -26,7 +26,8 @@ Identities выдаёт доверенный in-process setup, хранятся 
 | stop | stopped | operator, lab-admin |
 
 После stop разрешён только status. Viewer читает копию аудита через `audit(actor)`.
-Все identities ограничены одной lab. Management API и изменения ролей отсутствуют.
+Все identities ограничены одной lab. API поддерживает изменения ролей/revocation pre-enrolled identities;
+контракт — [API.md](API.md).
 
 Запрос валиден 60 секунд; будущие timestamps запрещены. Успешно принятый ID
 запоминается до уничтожения Lab, повтор отклоняется (результат не кешируется).
@@ -52,4 +53,5 @@ Wall-clock не гарантирует монотонность: production tran
 
 Ни этот компонент, ни флаг в конфигурации не доказывают containment. Запуск
 лабораторных сервисов запрещён до внешней проверки IPv4/IPv6/DNS egress deny,
-loopback bind, mounts/permissions и cleanup. Сетевого запуска в этом PR нет.
+loopback bind, mounts/permissions и cleanup. Сетевой listener реализован отдельно и допускается только после runtime guard
+и внешней проверки контейнера; обычный unit workflow не запускает его.

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 ID = re.compile(r"[a-zA-Z0-9_-]{1,64}\Z")
 OPERATIONS = frozenset({"ping", "status", "emit_test_event", "stop"})
+MANAGEMENT = frozenset({"set_viewer", "set_operator", "set_lab_admin", "revoke_member"})
 ROLES = frozenset({"viewer", "operator", "lab-admin"})
 
 
@@ -161,7 +162,7 @@ class Lab:
                     if event["operation"] is not None:
                         if (
                             type(event["operation"]) is not str
-                            or event["operation"] not in OPERATIONS
+                            or event["operation"] not in OPERATIONS | MANAGEMENT
                         ):
                             raise LabError("journal_corrupt")
                 except LabError:
@@ -180,7 +181,18 @@ class Lab:
                     if request_id not in pending or event.get("operation") != pending[request_id]:
                         raise LabError("journal_corrupt")
                     del pending[request_id]
-                    if event.get("operation") == "stop":
+                    operation = event.get("operation")
+                    if operation in MANAGEMENT:
+                        target = identifier(event["agent_id"])
+                        if operation == "revoke_member":
+                            self._memberships.pop(target, None)
+                        else:
+                            self._memberships[target] = {
+                                "set_viewer": "viewer",
+                                "set_operator": "operator",
+                                "set_lab_admin": "lab-admin",
+                            }[operation]
+                    if operation == "stop":
                         self._stopped = True
                 elif outcome != "denied":
                     raise LabError("journal_corrupt")
@@ -260,3 +272,51 @@ class Lab:
         }[request.operation]
         self._record(actor, request, "completed", "mock_completed")
         return result
+
+    def manage(self, actor, target, role, request_id, issued_at):
+        """Admin-only role change/revocation of a pre-enrolled synthetic identity."""
+        identifier(actor)
+        identifier(target)
+        identifier(request_id)
+        number(issued_at)
+        if role not in ("viewer", "operator", "lab-admin", None):
+            raise LabError("invalid_role")
+        operation = {
+            "viewer": "set_viewer",
+            "operator": "set_operator",
+            "lab-admin": "set_lab_admin",
+            None: "revoke_member",
+        }[role]
+        request = Request(request_id, self.lab_id, target, operation, issued_at)
+        if self._blocked:
+            raise LabError("audit_blocked")
+        if len(self._events) + 2 > self._max_events:
+            raise LabError("audit_full")
+        try:
+            if self._memberships.get(actor) != "lab-admin":
+                raise LabError("unauthorized")
+            if target == actor:
+                raise LabError("self_change_denied")
+            if not 0 <= number(self._clock()) - issued_at <= 60:
+                raise LabError("expired_request")
+            if request_id in self._seen:
+                raise LabError("replay_denied")
+            if len(self._seen) >= self._max_requests:
+                raise LabError("request_capacity")
+            if (
+                role is not None
+                and target not in self._memberships
+                and len(self._memberships) >= 100
+            ):
+                raise LabError("membership_capacity")
+        except LabError as error:
+            self._record(actor, request, "denied", str(error))
+            raise
+        self._record(actor, request, "allowed", "authorized")
+        self._seen.add(request_id)
+        if role is None:
+            self._memberships.pop(target, None)
+        else:
+            self._memberships[target] = role
+        self._record(actor, request, "completed", "membership_changed")
+        return {"actor_id": target, "role": role}

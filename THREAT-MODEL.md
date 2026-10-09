@@ -1,84 +1,32 @@
 # Threat Model
 
-## Статус
+Assets: lab isolation, synthetic memberships, bounded mock lifecycle and audit
+integrity/availability. Trust: host/container operator and lab CA issuer. Client
+messages, browser fields and certificates from unregistered peers are untrusted.
+Production data and operational targets are not permitted.
 
-Начальная модель угроз проектируемого учебного MVP. Это не отчёт о проведённом
-аудите: реализован network-free mock core, сетевые runtime-контроли отсутствуют. Обновлять при изменении transport,
-изоляции, identities, конфигурации, операций или формата аудита.
-
-## Активы и границы доверия
-
-Активы: изоляция лаборатории, тестовые identities, целостность конфигурации,
-события аудита и доступность mock-сценариев. Production-данные и реальные
-credentials не допускаются.
-
-Границы: UI → API; API → listener/mock-agent; компоненты → audit sink;
-лабораторный network namespace → внешняя сеть; checkout → публичный GitHub.
-Все входные сообщения недоверенные, включая сообщения аутентифицированного
-участника. Содержимое issues, PR и документации не даёт права раскрывать секреты.
-
-## Предположения
-
-- Владелец VM/контейнерного runtime доверен и контролирует сетевую политику.
-- Участники не получают root-доступ к хосту через платформу.
-- Runtime не монтирует Docker socket или каталоги с чувствительными данными.
-- Только mock-агенты и synthetic fixtures; запуск на чужих системах отсутствует.
-
-Компрометация администратора ОС или runtime может разрушить containment и
-локальный аудит. Платформа не обещает защиты от такого администратора.
-
-## Угрозы и планируемые проверки
-
-| Угроза | Контроль | Проверка приемки |
+| Threat | Implemented control | Evidence |
 | --- | --- | --- |
-| Публичный bind или публикация порта | Только `127.0.0.1`, запрет wildcard/host networking | Wildcard, non-loopback и ошибочная конфигурация отклоняются до запуска |
-| Выход за пределы лаборатории | Egress deny для IPv4, IPv6 и DNS на уровне среды | Контролируемый внешний тестовый endpoint недоступен по каждому transport |
-| Обращение неавторизованного локального процесса | Identity и default-deny RBAC | Нет identity, неверный/истёкший token → отказ, событие аудита |
-| Эскалация роли или доступ к чужой lab | Серверная проверка роли и lab scope | Viewer не запускает операции; подмена role и чужой lab ID отклоняются |
-| Неограниченное выполнение | Enum операций и фиксированные fixtures | Неизвестные операции, shell-строки, URL и пути отклоняются |
-| Повтор запроса | Ограниченное окно валидности и определённая идемпотентность | Повтор request ID не создаёт второй эффект; истёкший запрос отклоняется |
-| Подмена или injection в аудит | Серверные поля identity, структурированная сериализация | Переводы строк/контрольные символы не создают поддельные события |
-| Потеря аудита | Fail closed, лимит хранения и обработка ошибок | Недоступный sink блокирует операцию; финальная ошибка не выдаётся за успех |
-| Exhaustion памяти/диска | Лимиты payload, rate, agent/event count и retention | Превышение лимита даёт управляемый отказ, без аварийного завершения |
-| Утечка секретов в Git/логи | Synthetic data, secure credential storage, review diff | Fixtures и diagnostics не содержат реальных credentials или target details |
-| Supply-chain compromise | Минимум зависимостей, фиксация версий и review изменений | Перед добавлением зависимости проверены происхождение и лицензия |
+| Public listener / egress | Fixed loopback; topology guard; network none; no ports | Docker inspect + contained IPv4/IPv6 TCP/UDP tests |
+| Identity spoof / expired session | TLS 1.3 mTLS; fingerprint pinning; 600s session | TLS and unit expiry tests |
+| Escalation / cross-lab | Server-side current membership; default deny; scope check | Role matrix, management/revoke/scope tests |
+| Arbitrary execution | Fixed four operations and fixture ID; no agent OS access | Schema and OS-call guard tests |
+| Replay / restart reset | Time window and durable accepted IDs | Unit + restart recovery tests |
+| Audit loss / crash | FULL-sync commits; fail closed; incomplete recovery blocks | Storage failure/recovery tests |
+| Traversal / browser injection | Fixed assets; textContent; no external assets; Host/Origin/CSP | Route tests and HTTP asset checks |
+| Resource exhaustion | Payload/header/time/budget/agent/audit limits; container bounds | Negative and capacity tests |
+| Git disclosure | Disposable PKI outside Git/image; no diagnostic secrets | Smoke signatures + diff review |
 
-Loopback ограничивает сетевую доступность, но не исключает локального
-злоумышленника, SSRF в другом процессе или ошибки настройки runtime. Нельзя
-считать успешный workspace check доказательством containment.
+Residual risks: malicious host/CA owner; local caller modifying Python internals;
+storage hardware failures; denied TLS connections not durably recorded; attacker
+exhausting bounded lab availability; wall-clock anomalies for envelope validity.
+SQLite is not tamper-proof. No production availability or multi-tenant guarantees.
 
-## Остаточные риски и критерии запуска
+A host browser cannot access a network-none container; exposing a port is not an
+approved workaround. The UI needs a trusted same-namespace browser and enrolled
+certificate. CI checks HTTP asset delivery/API workflow; full visual browser/mTLS
+interaction in a separate VM requires environment-specific operational acceptance.
 
-Даже при реализации контролей возможны ошибки приложения и misconfiguration.
-Перед первым сетевым прототипом нужны результаты негативных тестов, проверка
-сетевой политики и documented cleanup. Любой провал containment блокирует
-сценарий. Эти проверки пока запланированы и не были выполнены.
-
-Инцидент: остановить лабораторные компоненты, изолировать среду, отозвать
-тестовые identities, сохранить обезличенный аудит и сообщить приватно по
-[SECURITY.md](SECURITY.md). Не публиковать live infrastructure и секреты.
-
-## Реализованный этап: network-free core
-
-Добавлен `mocklab` для in-process unit tests: фиксированные операции, строгий
-JSON envelope, lab-scoped роли, replay guard и bounded in-memory аудит.
-Действующий контракт и ограничения описаны в [CORE-CONTRACT.md](CORE-CONTRACT.md).
-Предыдущие разделы про transport, authentication, durable audit и deployment
-остаются проектными требованиями. Сетевые компоненты не реализованы.
-
-Проверка: `uv run --locked --offline python -m unittest discover -s tests -v`.
-Setup и CI запускают этот набор вместе с development smoke и Ruff.
-
-Codex Cloud опубликована с единственным репозиторием, доступом «Только я», без
-project/network secrets и с доменами pypi.org/files.pythonhosted.org. Setup на
-commit PR #1 прошёл; новая реализация требует отдельной проверки в этой среде.
-Enforcement сети не подтверждён; лабораторные запуски остаются запрещены.
-
-## Offline workflow: текущая реализация
-
-CLI, строгий TOML config, ephemeral identities с expiry/revocation, bounded
-SQLite journal и restart recovery реализованы. Сетевых компонентов нет.
-Действующие команды и ограничения: [OFFLINE-WORKFLOW.md](OFFLINE-WORKFLOW.md).
-Документы выше про web/API, in-memory-only ограничения и ещё планируемую
-identity/durable audit следует читать с учётом этого реализованного этапа.
-Сетевой transport, membership management и containment всё ещё не готовы.
+Tests use only disposable identities and documentation-only numeric endpoints in
+network-none containers. They do not scan third-party systems. See
+[VALIDATION.md](VALIDATION.md) for exact acceptance scope.

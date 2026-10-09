@@ -4,6 +4,16 @@
 
 ## Unreleased
 
+### Isolated mock MVP
+
+- Loopback TLS 1.3 API с mandatory mTLS/fingerprint pinning, expiry, Host/Origin checks.
+- Pre-enrolled membership management/revocation с audit/replay/recovery.
+- Packaged local web UI: fixed operations, membership и audit, без credential storage/CDN.
+- Runtime guard и digest-pinned network-none Docker acceptance workflow.
+- Synthetic one-day PKI вне checkout/image; cleanup собственных disposable данных.
+- Добавлены API unit tests и contained mTLS/egress/lifecycle/restart/cleanup integration.
+- Переписана основная документация под реальный MVP и operational acceptance scope.
+
 ### Offline workflow и исправления
 
 - CLI demo и fixed-operation terminal UI, просмотр аудита, строгий TOML config.
