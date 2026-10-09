@@ -41,3 +41,5 @@ fixed packaged UI assets. No command execution, dynamic loading or agent filesys
 access. Certificate creation is trusted provisioning, outside the API.
 A single enrolled client may exhaust its bounded request/audit budget; no HA or
 production availability promises. Admin/OS-owner compromise remains out of scope.
+
+Release candidate scope and operational limitations: [RELEASE.md](RELEASE.md).

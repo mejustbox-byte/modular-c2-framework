@@ -34,3 +34,5 @@ explicit. No cloud DB, arbitrary agent plugins, external targets or credentials.
 
 Contracts: [CORE-CONTRACT.md](CORE-CONTRACT.md), [API.md](API.md).
 Acceptance and remaining operational limits: [VALIDATION.md](VALIDATION.md).
+
+Release candidate scope and operational limitations: [RELEASE.md](RELEASE.md).

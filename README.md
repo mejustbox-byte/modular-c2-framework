@@ -1,5 +1,7 @@
 # Modular C2 Framework — Mock Lab
 
+Release candidate: **v0.1.0-rc.1** (Python metadata: `0.1.0rc1`).
+
 Учебная лаборатория управления **только mock-агентом**. Данные синтетические,
 операции фиксированные: `ping`, `status`, `emit_test_event`, `stop`.
 Нет shell, исполнения пользовательского кода, чтения файлов агентом, скрытности,
@@ -18,7 +20,8 @@ persistence, обхода защиты или работы с реальными
   dropped capabilities, no-new-privileges, tmpfs и resource limits.
 
 Это ограниченный учебный MVP, не production C2 и не публичный сервис.
-Слияний пока нет: реализация находится в последовательных draft PR.
+Исходники релиза объединяются в `main` после успешной приемки. Статус публикации
+и точный commit: [GitHub Releases](https://github.com/mejustbox-byte/modular-c2-framework/releases).
 Фактическая приемка описана в [VALIDATION.md](VALIDATION.md).
 
 ## Быстрый offline запуск
@@ -49,3 +52,9 @@ VM/namespace с браузером, доверенным lab CA и клиент�
 - [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Работа только в `mejustbox-byte/modular-c2-framework`. Лицензия — [MIT](LICENSE).
+
+## Релиз и ограничения
+
+[RELEASE.md](RELEASE.md) описывает состав предварительного релиза, проверки,
+установку из исходников и критерии стабильного выпуска. Проверка UI браузером
+и новой ветки в Codex Cloud пока не завершена; это явно ограничивает приемку.

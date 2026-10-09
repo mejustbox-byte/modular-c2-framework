@@ -30,3 +30,5 @@ interaction in a separate VM requires environment-specific operational acceptanc
 Tests use only disposable identities and documentation-only numeric endpoints in
 network-none containers. They do not scan third-party systems. See
 [VALIDATION.md](VALIDATION.md) for exact acceptance scope.
+
+Release candidate scope and operational limitations: [RELEASE.md](RELEASE.md).

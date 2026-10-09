@@ -7,10 +7,11 @@
 
 `Lab("lab-1", {"test-operator": "operator"})` создаёт единственный `mock-1`.
 Membership задаёт доверенный адаптер при создании; роль не берётся из запроса.
-Это не аутентификация: нельзя передавать клиентский actor напрямую из будущего API.
+Это не аутентификация: нельзя передавать клиентский actor напрямую из API.
 Identities выдаёт доверенный in-process setup, хранятся только hashes случайных
 токенов; TTL 1–3600 секунд с monotonic clock, expiry/revocation и lab scope.
-Это не transport authentication: сетевого входа нет.
+Это offline authentication. Сетевой адаптер отдельно аутентифицирует client
+certificate и выбирает actor по fingerprint; см. [API.md](API.md).
 
 `execute(actor, payload)` принимает bytes UTF-8 JSON до 4096 bytes. Обязательны:
 `schema_version` (int 1), `request_id`, `lab_id`, `agent_id`, `operation`,

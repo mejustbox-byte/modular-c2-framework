@@ -42,3 +42,5 @@ infrastructure or secrets in issues. If private reporting is unavailable, obtain
 an appropriate private reporting channel first. Revoke/rotate exposed credentials;
 a later deletion does not erase Git history. Stop/isolate the lab, preserve sanitized
 evidence and review incomplete journal operations before resuming.
+
+Release candidate scope and operational limitations: [RELEASE.md](RELEASE.md).

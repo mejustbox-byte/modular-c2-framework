@@ -55,3 +55,5 @@ SQLite гарантии durability зависят также от файлово
 
 Сетевой mock MVP реализован отдельно: [API.md](API.md), [INSTALL.md](INSTALL.md).
 Этот offline workflow не открывает listener и не доказывает containment.
+
+Release candidate scope and operational limitations: [RELEASE.md](RELEASE.md).
