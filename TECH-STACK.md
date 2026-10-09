@@ -16,7 +16,7 @@
 | Линтер и форматтер | **Ruff 0.16.10** | Один инструмент вместо отдельных linter/formatter, настройки в `pyproject.toml` |
 | Контейнеризация | Docker Engine + Compose **v2**, Linux; пока план | Одна изолированная VM/namespace в первом MVP; multi-container transport требует отдельного review |
 | CI | GitHub Actions, Ubuntu 24.04 | Read-only contents permissions, bounded timeout, SHA-pinned actions, никаких пользовательских secrets |
-| Хранилище и аудит | Local structured JSON events; реализация запланирована | Синтетический объём не требует внешней БД; bounded storage и fail closed обязательны |
+| Хранилище и аудит | Structured JSON events + stdlib SQLite; offline реализация | Bounded private journal, replay/lifecycle recovery; внешняя БД не нужна |
 | UI и web framework | Отложены до API contract | Не нужны для первого smoke; не добавляем зависимости без требований и проверок |
 
 Python 3.12.14 выбран как проверенный baseline, а не заявлен как самый новый
@@ -88,3 +88,12 @@ Codex Cloud опубликована с единственным репозит�
 project/network secrets и с доменами pypi.org/files.pythonhosted.org. Setup на
 commit PR #1 прошёл; новая реализация требует отдельной проверки в этой среде.
 Enforcement сети не подтверждён; лабораторные запуски остаются запрещены.
+
+## Offline workflow: текущая реализация
+
+CLI, строгий TOML config, ephemeral identities с expiry/revocation, bounded
+SQLite journal и restart recovery реализованы. Сетевых компонентов нет.
+Действующие команды и ограничения: [OFFLINE-WORKFLOW.md](OFFLINE-WORKFLOW.md).
+Документы выше про web/API, in-memory-only ограничения и ещё планируемую
+identity/durable audit следует читать с учётом этого реализованного этапа.
+Сетевой transport, membership management и containment всё ещё не готовы.

@@ -8,7 +8,8 @@
 
 Реализовано первое сетево-независимое ядро `mocklab`: один synthetic mock-agent,
 строгий envelope, роли viewer/operator/lab-admin, lab scope, replay protection и
-ограниченный in-memory аудит. Нет listener, API, UI, аутентификации transport или
+ограниченный аудит с опциональным SQLite journal и восстановлением.
+Добавлены ephemeral identities, строгий TOML config и offline CLI с меню. Нет listener, API, UI, аутентификации transport или
 контейнерной лаборатории. Полная изоляция сети ещё не подтверждена; лабораторные
 сервисы запускать нельзя. Unit tests не открывают порты.
 
@@ -90,3 +91,13 @@ uv run --locked --offline python -m unittest discover -s tests -v
 Контракт и ограничения: [CORE-CONTRACT.md](CORE-CONTRACT.md).
 Identity задаёт доверенный in-process адаптер; клиентские `role`/`actor_id`
 в envelope отклоняются. Это не готовая authentication boundary сетевого сервера.
+
+## Исполнимое offline-упражнение
+
+```bash
+uv run --locked --offline python -m mocklab
+uv run --locked --offline python -m mocklab --interactive
+```
+
+Установка, конфигурация, сохранение аудита и ограничения —
+[OFFLINE-WORKFLOW.md](OFFLINE-WORKFLOW.md). Полный сетевой MVP пока не готов.

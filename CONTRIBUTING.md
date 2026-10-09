@@ -33,8 +33,8 @@ git diff --check
 bash scripts/setup-cloud.sh
 ```
 
-Это синтаксическая проверка shell и workspace, а не runtime/security тесты.
-Прикладного тестового набора и сервисов пока нет. Development smoke и CI
+Workspace проверяет репозиторий и документы. Setup дополнительно запускает
+unit/negative/CLI tests; сетевых сервисов пока нет. Development smoke и CI
 описаны в TECH-STACK.md; запуск: `bash scripts/setup-cloud.sh` после bootstrap uv.
 Не утверждайте, что RBAC, loopback или egress deny проверены этим скриптом.
 
@@ -59,3 +59,12 @@ Reviewer проверяет соответствие scope, отсутствие
 согласованность документации с кодом и реальные результаты тестов. Защиту от
 потери аудита и сетевые ограничения проверяют отдельно от happy path.
 Уязвимости сообщайте приватно согласно [SECURITY.md](SECURITY.md).
+
+## Offline workflow: текущая реализация
+
+CLI, строгий TOML config, ephemeral identities с expiry/revocation, bounded
+SQLite journal и restart recovery реализованы. Сетевых компонентов нет.
+Действующие команды и ограничения: [OFFLINE-WORKFLOW.md](OFFLINE-WORKFLOW.md).
+Документы выше про web/API, in-memory-only ограничения и ещё планируемую
+identity/durable audit следует читать с учётом этого реализованного этапа.
+Сетевой transport, membership management и containment всё ещё не готовы.

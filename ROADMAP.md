@@ -14,7 +14,7 @@
 
 ## 1. Контракт событий и конфигурации
 
-- [ ] Реализовать строгую схему envelope, версии и фиксированные операции.
+- [x] Реализованы строгий envelope, фиксированные операции и offline TOML config.
 - [x] Описан in-process lifecycle и отказ повторов ID в CORE-CONTRACT.md.
 - [x] Строгая envelope validation и фиксированные reason codes в mock core.
 
@@ -34,8 +34,8 @@ payload отклоняются; schema tests проходят, секреты н
 
 - [ ] Server-side viewer/operator/lab-admin с default deny и lab scope.
 - [ ] Тестовые identities с expiry/revocation; mTLS после выбора transport.
-- [ ] Структурированный audit sink, корреляция и bounded retention.
-- [ ] Fail closed при недоступности обязательного аудита.
+- [x] SQLite audit, корреляция, лимиты, crash recovery; автоматической retention нет.
+- [x] Audit failure блокирует операции и recovery незавершённых запросов.
 
 Готово, когда отрицательные тесты ролей, identities, replay и отказа audit sink
 проходят; отказ и результат связываются request ID без записи секретов.
@@ -63,3 +63,14 @@ payload отклоняются; schema tests проходят, секреты н
 исключены на всех этапах.
 
 Следующий шаг: transport authentication и durable audit, затем проверенный containment.
+
+## Offline exercise
+
+- [x] Identity expiry/revocation и lab scope в доверенном in-process setup.
+- [x] Session request budget, строгая TOML config и терминальный UI.
+- [x] Исполнимая synthetic demo с cleanup ephemeral identity.
+- [x] Unit/negative/restart/CLI integration tests.
+- [ ] Container runtime и сетевой transport проверены в отдельной лаборатории.
+
+Docker отсутствует в текущем workspace; этот пункт нельзя отметить без runtime
+и фактической проверки IPv4/IPv6/DNS egress deny, permissions, ports и cleanup.

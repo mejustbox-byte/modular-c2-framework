@@ -4,6 +4,16 @@
 
 ## Unreleased
 
+### Offline workflow и исправления
+
+- CLI demo и fixed-operation terminal UI, просмотр аудита, строгий TOML config.
+- Ephemeral token hashes, monotonic expiry, revocation, lab scope и session budget.
+- Private SQLite audit journal, capacity checks, replay/lifecycle recovery.
+- Fail closed после interrupted operation; private-file/symlink checks.
+- Исправлен приём UTF-16 при обязательном UTF-8 envelope.
+- Добавлены identity, storage, restart, config и CLI integration tests.
+- Полный сетевой MVP блокируется отсутствием проверенного containment runtime.
+
 ### Mock core MVP
 
 - Добавлены network-free `mocklab`, строгий JSON envelope и фиксированные synthetic операции.
