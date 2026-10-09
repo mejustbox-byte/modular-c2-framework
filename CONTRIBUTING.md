@@ -64,7 +64,7 @@ Reviewer проверяет соответствие scope, отсутствие
 
 `bash scripts/container-checks.sh` только на контролируемом Docker host.
 Не запускайте listener в обычном workspace, не отключайте guard/mTLS и не
-публикуйте порты. PR обязан иметь smoke и container CI evidence. Не помещайте
+публикуйте порты. PR обязан иметь smoke, container/browser и image-audit CI evidence. Не помещайте
 сгенерированную PKI, journals или runtime artifacts в Git. UI acceptance и
 остаточные ограничения описаны в VALIDATION.md.
 
@@ -72,6 +72,6 @@ Reviewer проверяет соответствие scope, отсутствие
 
 При явном разрешении владельца завершите проверки, объедините зависимости PR
 и release PR в main. Merge title `Release v<version>` включает gated release job;
-он публикует prerelease после smoke и container success. Версии в pyproject.toml
-и uv.lock должны совпадать. Stable promotion требует оставшейся operational
+он публикует stable source release после smoke, container/browser и image-audit success. Версии в pyproject.toml
+и uv.lock должны совпадать. Stable promotion требует recorded browser/mTLS и runtime/CVE
 приемки; порядок и ограничения см. [RELEASE.md](RELEASE.md).

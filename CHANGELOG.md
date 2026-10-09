@@ -2,12 +2,15 @@
 
 ## Unreleased
 
-- Повторная release/main приемка, проверка Git tag и обновление Cloud setup через
-  verified local bundle без расширения allowlist; отчет ACCEPTANCE-2026-10-09.md.
-- Runtime review выявил security release Python 3.12.15; stable promotion требует
-  patch adoption/revalidation и полноценной browser/mTLS приемки.
-
-- Полная browser/mTLS приемка и runtime security-patch revalidation перед стабильным релизом.
+- Prepare stable source release 0.1.0 with exact-commit gated publication.
+- Python 3.12.15, digest-pinned Alpine 3.24 runtime, patched zlib 1.3.2-r1;
+  remove unused pip/ensurepip. Bookworm was rejected by the actual CVE audit.
+- Full Trivy 0.75.0 application-image CVE report, CycloneDX SBOM and strict
+  HIGH/CRITICAL promotion gate, without ignored or unfixed suppressions.
+- Real Firefox/native NSS mTLS UI acceptance in the isolated namespace,
+  including role changes/revocation and TLS refusal. Retain synthetic screenshots.
+- Update installation, stack, validation, security, release and acceptance docs;
+  distinguish current CI evidence from historical rc.1 Cloud restoration.
 
 ## v0.1.0-rc.1 — 2026-10-09
 

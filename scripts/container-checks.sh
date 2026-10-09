@@ -3,7 +3,9 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 fixture_parent="$(mktemp -d)"
 container_id=''
+browser_id=''
 cleanup() {
+  if [[ -n "$browser_id" ]]; then docker rm -f "$browser_id" >/dev/null; fi
   if [[ -n "$container_id" ]]; then docker rm -f "$container_id" >/dev/null; fi
   # Remove only this script's disposable synthetic certificate directory.
   sudo rm -rf -- "$fixture_parent"
@@ -22,5 +24,21 @@ sudo tar -C "$fixture_parent/pki" -cf - \
   ca.crt server.crt server.key viewer.crt viewer.key operator.crt operator.key \
   admin.crt admin.key principals.json | docker exec -i "$container_id" \
   tar -C /run/lab --no-same-owner -xf -
+docker exec "$container_id" python -c 'import platform,ssl,sqlite3; print(platform.python_version(),ssl.OPENSSL_VERSION,sqlite3.sqlite_version)'
 docker exec "$container_id" python -m unittest discover -s integration -v
 printf '%s\n' 'Contained integration, mTLS, lifecycle, audit and egress checks passed.'
+
+# A separate browser image shares only the inspected application's network namespace.
+# Native Firefox NSS uses the synthetic CA/client identity; no TLS bypass or exposed ports.
+docker build -t modular-c2-browser:ci browser-tests
+docker exec -d "$container_id" python -m mocklab.server
+browser_id="$(docker run -d --network "container:$container_id" --read-only --cap-drop ALL \
+  --security-opt no-new-privileges --user 10001:10001 --memory 1g --cpus 2 \
+  --pids-limit 256 --tmpfs /run/lab:rw,nosuid,nodev,mode=0700,uid=10001,gid=10001,size=256m \
+  modular-c2-browser:ci python -c 'import time; time.sleep(600)')"
+sudo tar -C "$fixture_parent/pki" -cf - ca.crt viewer.crt viewer.key operator.crt operator.key \
+  admin.crt admin.key | docker exec -i "$browser_id" tar -C /run/lab --no-same-owner -xf -
+docker exec "$browser_id" python /app/test_browser.py
+mkdir -p reports/browser
+docker exec "$browser_id" tar -C /run/lab -cf - viewer.png operator.png admin.png \
+  | tar -C reports/browser -xf -

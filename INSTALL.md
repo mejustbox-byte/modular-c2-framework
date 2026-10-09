@@ -2,13 +2,13 @@
 
 ## Source release
 
-Скачайте source archive для `v0.1.0-rc.1` с GitHub Releases или checkout tag
-в существующем клоне. Candidate — исходники, не PyPI package и не hosted service.
+Скачайте source archive для `v0.1.0` с GitHub Releases или checkout tag
+в существующем клоне. Release — исходники, не PyPI package и не hosted service.
 Состав и ограничения: [RELEASE.md](RELEASE.md).
 
 ## Development
 
-Runtime: CPython 3.12.14, Linux. Bootstrap выполняется до отключения сети:
+Runtime: CPython 3.12.15, Linux. Bootstrap выполняется до отключения сети:
 
 ```bash
 python3.12 -m venv .tools
@@ -49,8 +49,13 @@ interfaces/routes, UID, capabilities, no-new-privileges и read-only root.
 содержит только synthetic viewer/operator/admin и fingerprint сертификата.
 TLS 1.3 и client certificate обязательны; session expiry — 10 минут.
 Скрипт проверяет API/UI, mTLS/RBAC/replay/membership, аудит, restart, IPv4/IPv6/DNS
-отказ по documentation-only адресам и cleanup listener. В конце удаляет только
-свой контейнер и свой временный каталог PKI. Production endpoints не используются.
+отказ по documentation-only адресам и cleanup listener. После API tests запускает настоящий Firefox в отдельном read-only non-root
+контейнере с той же isolated network namespace, без опубликованных ports.
+Native NSS доверяет lab CA и выбирает pre-enrolled client certificate; TLS error
+bypass не используется. Browser memory/PIDs/CPU bounded; profile и PKI — в tmpfs.
+Проверяются все роли, audit, смена роли/отзыв доступа и TLS-negative cases.
+Скриншоты сохраняются в `reports/browser/`, ключи туда не экспортируются.
+В конце удаляет только свои контейнеры и свой временный каталог PKI. Production endpoints не используются.
 
 Это acceptance, а не команда публикации портов или установки публичного сервера.
 CLI/API команды и модель доступа: [API.md](API.md).
@@ -82,3 +87,21 @@ journal сохраняется только при явном `--audit-directory
 локальный Git bundle. Результаты публикации/восстановления и оставшаяся приемка:
 [ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).
 Её собственный runtime containment не подтверждён: listener там запускать нельзя.
+
+## Image CVE audit
+
+```bash
+bash scripts/audit-image.sh
+```
+
+Нужны Docker, curl, tar и sha256sum. Trivy 0.75.0 binary проверяется SHA256;
+полный JSON audit и CycloneDX SBOM сохраняются в `reports/`. Каждая известная
+HIGH/CRITICAL находка, включая unfixed, блокирует выпуск. Scanner DB download
+происходит на CI host до проверки; лабораторная сеть не расширяется.
+Runtime: pinned Python 3.12.15 Alpine 3.24 image, patched zlib 1.3.2-r1, без
+unused pip/ensurepip. Проверяется прикладной образ; browser tool image — отдельный
+CI инструмент и не поставляется как runtime. Point-in-time evidence:
+[STABLE-ACCEPTANCE.md](STABLE-ACCEPTANCE.md).
+
+Cloud snapshot, описанный выше, остается историческим rc.1/Python 3.12.14.
+Он не является проверенной средой текущего source release/runtime.

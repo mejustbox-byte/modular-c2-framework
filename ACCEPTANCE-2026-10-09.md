@@ -1,4 +1,7 @@
-# Acceptance report — 2026-10-09
+# Historical rc.1 / Cloud acceptance — 2026-10-09
+
+This report records rc.1 at the time of its acceptance. Later runtime/browser/CVE
+work supersedes its outstanding checks: [STABLE-ACCEPTANCE.md](STABLE-ACCEPTANCE.md).
 
 Source under test: release `v0.1.0-rc.1`, commit
 `c27150a2c0fa3280208f0efe8afa9adb3178a4da`, tree

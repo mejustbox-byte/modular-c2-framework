@@ -19,17 +19,21 @@ and evidence; release/merge is separate from implementation.
 ## Operational adoption
 
 - [x] Owner authorized merging and a release after acceptance.
-- [ ] Stable release: complete browser acceptance and runtime security-patch revalidation.
+- [x] Real Firefox/native mTLS acceptance and Python 3.12.15 security-patch adoption.
+- [x] Full application-image CVE/SBOM audit and dependency remediation.
+- [ ] Publish stable source release after final merge-commit CI gates.
 - [x] Update Cloud install/start instructions, republish and verify a new restored task.
-- [ ] Test browser mTLS/visual interaction in the user's isolated VM, with no port exposure.
+- [x] Test real browser mTLS/visual interaction in CI's isolated namespace, without ports.
 
 These adoption tasks are not claimed by local tests or HTTP asset checks.
 Full production C2, real agents, public hosting, arbitrary commands, stealth,
 persistence and defense bypass are excluded. Multi-agent scale, audit archival and
 external identity providers require a separate future scope and threat review.
 
-## Release candidate
+## Source release
 
-`v0.1.0-rc.1` publishes from a release merge commit only after both main CI jobs
-pass. See [RELEASE.md](RELEASE.md). The GitHub release page is authoritative for
-publication status; pending operational checks are not waived by the candidate.
+Version metadata `0.1.0`; release publication requires all main-commit smoke,
+container/browser and image-audit jobs. See [RELEASE.md](RELEASE.md) and
+[STABLE-ACCEPTANCE.md](STABLE-ACCEPTANCE.md). GitHub Releases is authoritative
+for actual publication status. The independent Cloud restoration evidence
+remains historical rc.1/Python 3.12.14.

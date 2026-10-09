@@ -9,17 +9,17 @@ acceptance workflow проверяет mTLS, RBAC и containment.
 
 | Слой | Выбор и версия | Обоснование |
 | --- | --- | --- |
-| Runtime | CPython **3.12.14**, Linux | Зрелая ветка, стандартные `unittest`, `tomllib`, `enum`, `dataclasses`; версия доступна и проверена в текущем workspace |
+| Runtime | CPython **3.12.15**, Linux | Зрелая ветка, стандартные `unittest`, `tomllib`, `enum`, `dataclasses`; версия доступна и проверена в текущем workspace |
 | Пакетный менеджер | **uv 0.12.24**, `.venv`, `uv.lock` | Единый lock/sync workflow, фиксированные версии; `uv sync --locked` отклоняет устаревший lock |
 | Прикладные зависимости | Пока отсутствуют | Smoke не требует серверов, сети или credentials; минимум supply-chain surface |
-| Тестовый стек | `unittest` из CPython 3.12.14 | Нет дополнительных пакетов для первичной проверки; unit/negative/integration tests добавляются с реализацией |
+| Тестовый стек | `unittest` из CPython 3.12.15 | Нет дополнительных пакетов для первичной проверки; unit/negative/integration tests добавляются с реализацией |
 | Линтер и форматтер | **Ruff 0.16.10** | Один инструмент вместо отдельных linter/formatter, настройки в `pyproject.toml` |
 | Контейнеризация | Docker Engine **28.0.4** в проверенном CI, Linux; Docker CLI; Compose не используется | Одна изолированная VM/namespace в первом MVP; multi-container transport требует отдельного review |
 | CI | GitHub Actions, Ubuntu 24.04 | Read-only contents permissions, bounded timeout, SHA-pinned actions, никаких пользовательских secrets |
 | Хранилище и аудит | Structured JSON events + stdlib SQLite; offline и contained API | Bounded private journal, replay/lifecycle recovery; внешняя БД не нужна |
 | UI и web framework | stdlib http.server + ssl; fixed HTML/CSS/JS | Фиксированный UI и mTLS API без прикладных dependencies |
 
-Python 3.12.14 выбран как проверенный baseline, а не заявлен как самый новый
+Python 3.12.15 выбран как проверенный baseline, а не заявлен как самый новый
 patch release. Runtime и инструменты обновляются отдельным PR после smoke,
 lockfile, review release notes и проверки security advisories. Перед стабильным или расширенным сетевым выпуском обязательна повторная
 проверка поддерживаемых security patches; candidate сохраняет проверенный baseline.
@@ -75,8 +75,8 @@ Codex Cloud считается проверенным только после з
 
 ## MVP runtime
 
-Dockerfile: `python:3.12.14-slim-bookworm` с digest
-`sha256:392307d22300de8b5986851a12d9176dfc0fc073e65bf6523ebd7dcbeb23564e`,
+Dockerfile: `python:3.12.15-alpine3.24` с digest
+`sha256:1b668429b3511ab407d8e00648891631b0b1a4d7e15e3ca70f38ab5b91ad4ab4`,
 полученным из фактической CI-сборки. Нет прикладных third-party dependencies.
 TLS 1.3, mTLS и SQLite предоставляет stdlib; OpenSSL CLI используется только для
 одноразовой PKI на CI host, не внутри application API. Compose не нужен: один
@@ -89,10 +89,17 @@ Docker Engine версию сообщает acceptance log; host runner image о
 без CDN/build dependencies. Container integration отдельна от обычного unit setup.
 См. [API.md](API.md), [VALIDATION.md](VALIDATION.md).
 
-Release metadata: `0.1.0rc1`; Git tag `v0.1.0-rc.1`. Release job получает
-`contents: write` только для публикации из main после обоих checks; обычные
+Release metadata: `0.1.0`; Git tag `v0.1.0`. Release job получает
+`contents: write` только для публикации из main после smoke, container/browser и image-audit checks; обычные
 smoke/container jobs сохраняют read-only permissions. См. [RELEASE.md](RELEASE.md).
 
 Повторная приемка 2026-10-09 и advisory review: [ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).
-Python 3.12.15 — опубликованный security patch; до stable требуется его adoption
-и повторная проверка, текущий source candidate сохраняет исходный pin 3.12.14.
+Python 3.12.15 принят как security baseline и локально проверен. Bookworm image
+получил 53 HIGH и 2 CRITICAL findings; приложение переведено на официальный
+Alpine 3.24 image для повторной полной CVE и containment/browser приемки.
+Firefox 1.63.0 Playwright image используется только как CI test tooling,
+отдельно от прикладного образа; native NSS CA и client certs, без TLS bypass.
+Trivy 0.75.0 binary проверяется SHA256; все HIGH/CRITICAL блокируют выпуск.
+
+Patched runtime zlib 1.3.2-r1; unused pip/ensurepip removed. Current acceptance:
+[STABLE-ACCEPTANCE.md](STABLE-ACCEPTANCE.md). Historical Cloud snapshot is rc.1/3.12.14.
