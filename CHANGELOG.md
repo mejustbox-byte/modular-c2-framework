@@ -4,6 +4,14 @@
 
 ## Unreleased
 
+### Mock core MVP
+
+- Добавлены network-free `mocklab`, строгий JSON envelope и фиксированные synthetic операции.
+- Добавлены роли и lab scope, 60-second validity, replay guard и bounded in-memory аудит.
+- Добавлены 12 unit/negative tests, включая audit failure, capacity и отсутствие OS operations.
+- CI/setup дополнены unit tests; CORE-CONTRACT описывает реализованный контракт и ограничения.
+- Зафиксирована публикация приватной Codex Cloud для setup commit PR #1; новый commit ещё не проверен там.
+
 ### Added
 
 - `ARCHITECTURE.md`: компоненты mock-лаборатории, ограниченные операции, RBAC,
@@ -40,5 +48,5 @@
   project files; это не полный secrets audit.
 - GitHub CI: push и pull_request workflows успешно выполнили setup, smoke,
   Ruff lint и форматирование для первого commit этого PR.
-- Пользователь сообщил о создании Codex Cloud; привязка единственного
-  репозитория, настройки secrets и smoke внутри неё пока не проверены.
+- Codex Cloud setup commit PR #1 проверен и среда опубликована; новый mock core
+  пока проверен локально, его Cloud/CI результаты будут подтверждены отдельно.

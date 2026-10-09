@@ -115,7 +115,19 @@ scanner доказательством отсутствия любых секр�
 credentials и OIDC/VPN connections не настроены. Platform-managed authentication
 не копируется в project files. Сохраните результат smoke, не выводя окружение.
 
-Текущий статус: smoke, lint и форматирование прошли в текущем workspace и
-GitHub CI (push и pull_request). Пользователь сообщил о создании Codex Cloud,
-но её repository scope, настройки secrets и smoke в самой среде ещё не
-подтверждены независимой проверкой: текущий чат не имеет доступа к её настройкам.
+
+## Реализованный этап: network-free core
+
+Добавлен `mocklab` для in-process unit tests: фиксированные операции, строгий
+JSON envelope, lab-scoped роли, replay guard и bounded in-memory аудит.
+Действующий контракт и ограничения описаны в [CORE-CONTRACT.md](CORE-CONTRACT.md).
+Предыдущие разделы про transport, authentication, durable audit и deployment
+остаются проектными требованиями. Сетевые компоненты не реализованы.
+
+Проверка: `uv run --locked --offline python -m unittest discover -s tests -v`.
+Setup и CI запускают этот набор вместе с development smoke и Ruff.
+
+Codex Cloud опубликована с единственным репозиторием, доступом «Только я», без
+project/network secrets и с доменами pypi.org/files.pythonhosted.org. Setup на
+commit PR #1 прошёл; новая реализация требует отдельной проверки в этой среде.
+Enforcement сети не подтверждён; лабораторные запуски остаются запрещены.

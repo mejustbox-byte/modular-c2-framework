@@ -3,7 +3,7 @@
 ## Статус
 
 Начальная модель угроз проектируемого учебного MVP. Это не отчёт о проведённом
-аудите: код и runtime-контроли ещё отсутствуют. Обновлять при изменении transport,
+аудите: реализован network-free mock core, сетевые runtime-контроли отсутствуют. Обновлять при изменении transport,
 изоляции, identities, конфигурации, операций или формата аудита.
 
 ## Активы и границы доверия
@@ -57,3 +57,19 @@ Loopback ограничивает сетевую доступность, но н
 Инцидент: остановить лабораторные компоненты, изолировать среду, отозвать
 тестовые identities, сохранить обезличенный аудит и сообщить приватно по
 [SECURITY.md](SECURITY.md). Не публиковать live infrastructure и секреты.
+
+## Реализованный этап: network-free core
+
+Добавлен `mocklab` для in-process unit tests: фиксированные операции, строгий
+JSON envelope, lab-scoped роли, replay guard и bounded in-memory аудит.
+Действующий контракт и ограничения описаны в [CORE-CONTRACT.md](CORE-CONTRACT.md).
+Предыдущие разделы про transport, authentication, durable audit и deployment
+остаются проектными требованиями. Сетевые компоненты не реализованы.
+
+Проверка: `uv run --locked --offline python -m unittest discover -s tests -v`.
+Setup и CI запускают этот набор вместе с development smoke и Ruff.
+
+Codex Cloud опубликована с единственным репозиторием, доступом «Только я», без
+project/network secrets и с доменами pypi.org/files.pythonhosted.org. Setup на
+commit PR #1 прошёл; новая реализация требует отдельной проверки в этой среде.
+Enforcement сети не подтверждён; лабораторные запуски остаются запрещены.
