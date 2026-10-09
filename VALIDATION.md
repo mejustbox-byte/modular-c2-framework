@@ -19,7 +19,7 @@ replay, management/revocation, mock lifecycle, audit, restart recovery and liste
 Certificate validity is also enforced by OpenSSL; application expiry tested in-process.
 
 All five contained integration tests passed in GitHub Actions run
-[37888774720](https://github.com/mejustbox-byte/modular-c2-framework/actions/runs/37888774720)
+[37889473519](https://github.com/mejustbox-byte/modular-c2-framework/actions/runs/37889473519)
 on 2026-10-09. Smoke/unit/lint job passed as well. Provisioning failures were
 corrected by streaming selected fixture files into private tmpfs through the
 unprivileged container process, without relaxing storage/network controls.
@@ -34,7 +34,10 @@ Production scale, real agents, public hosting and arbitrary execution are exclud
 Browser visual/mTLS testing in a user-managed isolated VM is not claimed by HTTP asset
 acceptance. CI validates API/asset behavior. Codex Cloud remains a development-only
 workspace with independent containment unverified; no listener runs there. Its setup
-was checked on PR #1, new branch install/start instructions need review before adoption.
-Release candidate v0.1.0-rc.1 is eligible for publication after merge and successful
-main-commit smoke/container jobs. The release job depends on both checks; the release
-page identifies its exact source commit. This is not stable/production acceptance.
+was updated to the exact release commit using a verified local Git bundle, without
+network-policy expansion. Repeated setup passed 33 tests, 4 smoke, lint/format, CLI
+and expected server refusal. Publication/restoration status and runtime review:
+[ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).
+Release candidate v0.1.0-rc.1 was published after successful main-commit
+smoke/container jobs. The tag and release target were read back and match
+c27150a2c0fa3280208f0efe8afa9adb3178a4da. This is not stable/production acceptance.

@@ -33,8 +33,9 @@ unpublished; fix the failure and rerun the workflow, never bypass its checks.
 
 - Full visual interaction using a same-namespace browser, trusted lab CA and
   enrolled client certificate has not been verified. HTTP assets and API are tested.
-- The new revision has not been tested in the previously configured Codex Cloud
-  environment. Its old setup pin must be updated and smoke rerun before adoption.
+- The release revision passed repeated setup in the existing Codex Cloud environment
+  after a verified local bundle import. Updated publication/restoration evidence is
+  recorded in [ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).
 - Ordinary Cloud/host workspaces are not verified runtime containment. They may
   run offline development checks; network listeners must refuse those environments.
 - Python 3.12.14 is the tested baseline, not a claim of the latest security patch.

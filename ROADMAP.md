@@ -19,8 +19,8 @@ and evidence; release/merge is separate from implementation.
 ## Operational adoption
 
 - [x] Owner authorized merging and a release after acceptance.
-- [ ] Stable release: complete browser and final Cloud operational acceptance.
-- [ ] Update Cloud install/start instructions from old pinned setup commit after review.
+- [ ] Stable release: complete browser acceptance and runtime security-patch revalidation.
+- [x] Update Cloud install/start instructions, republish and verify a new restored task.
 - [ ] Test browser mTLS/visual interaction in the user's isolated VM, with no port exposure.
 
 These adoption tasks are not claimed by local tests or HTTP asset checks.

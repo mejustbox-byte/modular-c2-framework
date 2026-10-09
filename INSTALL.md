@@ -76,7 +76,9 @@ journal сохраняется только при явном `--audit-directory
 ## Codex Cloud
 
 Опубликована отдельная private среда для единственного репозитория, без project
-и network secrets, с allowlist PyPI/file storage. Setup commit PR #1 проверен.
-Текущий MVP проверяется локально и в GitHub CI; первоначальный Cloud install/start
-script привязан к старому commit и требует обновления после review новой ветки.
+и network secrets, с allowlist pypi.org/files.pythonhosted.org. Cloud install/start
+обновлены на release commit c27150a2c0fa3280208f0efe8afa9adb3178a4da; HEAD/tree и
+повторный setup проверены. Для обновления без GitHub egress использован проверенный
+локальный Git bundle. Результаты публикации/восстановления и оставшаяся приемка:
+[ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).
 Её собственный runtime containment не подтверждён: listener там запускать нельзя.

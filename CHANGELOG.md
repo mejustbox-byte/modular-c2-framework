@@ -2,7 +2,12 @@
 
 ## Unreleased
 
-- Полная browser/mTLS и финальная Codex Cloud приемка перед стабильным релизом.
+- Повторная release/main приемка, проверка Git tag и обновление Cloud setup через
+  verified local bundle без расширения allowlist; отчет ACCEPTANCE-2026-10-09.md.
+- Runtime review выявил security release Python 3.12.15; stable promotion требует
+  patch adoption/revalidation и полноценной browser/mTLS приемки.
+
+- Полная browser/mTLS приемка и runtime security-patch revalidation перед стабильным релизом.
 
 ## v0.1.0-rc.1 — 2026-10-09
 
