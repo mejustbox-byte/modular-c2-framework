@@ -56,11 +56,13 @@ class ContainedTests(unittest.TestCase):
         cls.server = subprocess.Popen(
             [sys.executable, "-m", "mocklab.server"],
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
         )
         for _ in range(50):
             if cls.server.poll() is not None:
-                raise RuntimeError("Contained server startup failed")
+                raise RuntimeError(
+                    "Contained server startup failed: " + cls.server.stderr.read().decode()
+                )
             try:
                 if request("admin", "GET", "/api/session")[0] == 200:
                     return
@@ -153,7 +155,7 @@ class ContainedTests(unittest.TestCase):
         type(self).server = subprocess.Popen(
             [sys.executable, "-m", "mocklab.server"],
             stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
         )
         for _ in range(50):
             try:

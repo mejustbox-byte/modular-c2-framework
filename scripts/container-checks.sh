@@ -10,6 +10,7 @@ cleanup() {
 }
 trap cleanup EXIT
 python3 scripts/make-lab-fixture.py "$fixture_parent/pki"
+docker version --format 'Docker Engine {{.Server.Version}}'
 docker build -t modular-c2-lab:ci .
 container_id="$(docker run -d --network none --read-only --cap-drop ALL \
   --security-opt no-new-privileges --user 10001:10001 --memory 256m --cpus 1 \
@@ -17,6 +18,6 @@ container_id="$(docker run -d --network none --read-only --cap-drop ALL \
   modular-c2-lab:ci python -c 'import time; time.sleep(600)')"
 docker inspect "$container_id" | python3 scripts/check-container.py
 sudo chown -R 10001:10001 "$fixture_parent/pki"
-docker cp -a "$fixture_parent/pki/." "$container_id:/run/lab/"
+sudo docker cp -a "$fixture_parent/pki/." "$container_id:/run/lab/"
 docker exec "$container_id" python -m unittest discover -s integration -v
 printf '%s\n' 'Contained integration, mTLS, lifecycle, audit and egress checks passed.'
