@@ -44,3 +44,11 @@ a later deletion does not erase Git history. Stop/isolate the lab, preserve sani
 evidence and review incomplete journal operations before resuming.
 
 Release candidate scope and operational limitations: [RELEASE.md](RELEASE.md).
+
+## Image and browser promotion gates
+
+Python 3.12.15 is the development baseline. Release CI requires the full pinned
+Trivy image audit with no HIGH/CRITICAL findings and native Firefox NSS mTLS
+acceptance in the laboratory network namespace. Disposable PKI is excluded from
+reports and images. Scanner availability and failed browser/TLS/containment
+checks block promotion.

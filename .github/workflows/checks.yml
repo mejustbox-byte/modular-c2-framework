@@ -21,7 +21,7 @@ jobs:
         run: bash scripts/setup-cloud.sh
   container:
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
@@ -31,9 +31,34 @@ jobs:
           python-version-file: .python-version
       - name: Contained mock laboratory acceptance
         run: bash scripts/container-checks.sh
+      - name: Save real browser screenshots
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: browser-acceptance
+          path: reports/browser/
+          if-no-files-found: warn
+          retention-days: 14
+  image-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - name: Full image CVE audit and CycloneDX SBOM
+        run: bash scripts/audit-image.sh
+      - name: Save complete image CVE report and SBOM
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: image-security-audit
+          path: reports/*.json
+          if-no-files-found: error
+          retention-days: 30
   release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'Release v')
-    needs: [smoke, container]
+    needs: [smoke, container, image-audit]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:

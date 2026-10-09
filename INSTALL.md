@@ -8,7 +8,7 @@
 
 ## Development
 
-Runtime: CPython 3.12.14, Linux. Bootstrap выполняется до отключения сети:
+Runtime: CPython 3.12.15, Linux. Bootstrap выполняется до отключения сети:
 
 ```bash
 python3.12 -m venv .tools

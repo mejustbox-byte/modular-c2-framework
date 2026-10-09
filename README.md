@@ -32,7 +32,7 @@ uv run --locked --offline python -m mocklab
 uv run --locked --offline python -m mocklab --interactive
 ```
 
-Для setup нужны CPython 3.12.14 и uv 0.12.24; Ruff 0.16.10 зафиксирован lockfile.
+Для setup нужны CPython 3.12.15 и uv 0.12.24; Ruff 0.16.10 зафиксирован lockfile.
 [INSTALL.md](INSTALL.md) содержит bootstrap, контейнерные проверки и cleanup.
 
 ## Сетевая лаборатория

@@ -33,3 +33,6 @@ external identity providers require a separate future scope and threat review.
 `v0.1.0-rc.1` publishes from a release merge commit only after both main CI jobs
 pass. See [RELEASE.md](RELEASE.md). The GitHub release page is authoritative for
 publication status; pending operational checks are not waived by the candidate.
+
+Python 3.12.15 adoption and native Firefox/mTLS plus image CVE gates are
+implemented for CI validation; stable promotion awaits observed results.

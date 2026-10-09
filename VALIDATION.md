@@ -41,3 +41,13 @@ and expected server refusal. Publication/restoration status and runtime review:
 Release candidate v0.1.0-rc.1 was published after successful main-commit
 smoke/container jobs. The tag and release target were read back and match
 c27150a2c0fa3280208f0efe8afa9adb3178a4da. This is not stable/production acceptance.
+
+## Stable promotion checks under implementation
+
+The development runtime is Python 3.12.15. Trivy 0.75.0 produces full CVE JSON
+and CycloneDX SBOM; all HIGH/CRITICAL findings block publication, including
+unfixed findings. A pinned Firefox image shares only the inspected application
+network namespace. Native NSS trusts the disposable CA and imports each client
+identity. Tests require refusal without identity or with an untrusted CA and
+verify viewer/operator/admin UI, audit and role changes. No TLS bypass or port
+publishing is enabled. These new checks are not yet recorded as passed.

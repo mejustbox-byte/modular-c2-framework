@@ -51,3 +51,7 @@ Stop the disposable lab and remove only its own runtime/container data using the
 acceptance script cleanup. Retained offline journals are not automatically reset:
 preserve them for review and create a new private directory for a new exercise.
 To reverse a source change, use a reviewed revert PR; do not rewrite shared history.
+
+Stable promotion now requires Python 3.12.15, the complete pinned Trivy image
+audit (no HIGH/CRITICAL findings) and native Firefox mTLS UI acceptance.
+These additional gates await observed results. This document still describes rc.1.

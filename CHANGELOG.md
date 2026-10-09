@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Python 3.12.15 adopted with digest-pinned official image.
+- Added Trivy 0.75.0 full CVE report/SBOM and strict HIGH/CRITICAL release gate.
+- Added real Firefox native NSS mTLS UI acceptance in the isolated lab namespace.
+  New gates await observed CI results; stable release is not yet declared.
+
 - Повторная release/main приемка, проверка Git tag и обновление Cloud setup через
   verified local bundle без расширения allowlist; отчет ACCEPTANCE-2026-10-09.md.
 - Runtime review выявил security release Python 3.12.15; stable promotion требует
