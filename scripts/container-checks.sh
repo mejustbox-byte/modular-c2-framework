@@ -39,6 +39,5 @@ sudo tar -C "$fixture_parent/pki" -cf - ca.crt viewer.crt viewer.key operator.cr
   admin.crt admin.key | docker exec -i "$browser_id" tar -C /run/lab --no-same-owner -xf -
 docker exec "$browser_id" python /app/test_browser.py
 mkdir -p reports/browser
-for actor in viewer operator admin; do
-  docker cp "$browser_id:/run/lab/$actor.png" "reports/browser/$actor.png"
-done
+docker exec "$browser_id" tar -C /run/lab -cf - viewer.png operator.png admin.png \
+  | tar -C reports/browser -xf -

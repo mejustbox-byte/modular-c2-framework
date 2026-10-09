@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Python 3.12.15 adopted with digest-pinned official image.
+- Python 3.12.15 adopted with digest-pinned official Alpine 3.24 image.
+  Initial Bookworm audit blocked promotion with 53 HIGH and 2 CRITICAL findings.
 - Added Trivy 0.75.0 full CVE report/SBOM and strict HIGH/CRITICAL release gate.
 - Added real Firefox native NSS mTLS UI acceptance in the isolated lab namespace.
   New gates await observed CI results; stable release is not yet declared.
