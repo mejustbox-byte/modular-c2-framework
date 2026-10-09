@@ -78,16 +78,6 @@ journal сохраняется только при явном `--audit-directory
 автоматически. При capacity — отказ, новый run требует нового journal.
 После неполной операции replay/recovery блокируется до ручного разбора, без reset.
 
-## Codex Cloud
-
-Опубликована отдельная private среда для единственного репозитория, без project
-и network secrets, с allowlist pypi.org/files.pythonhosted.org. Cloud install/start
-обновлены на release commit c27150a2c0fa3280208f0efe8afa9adb3178a4da; HEAD/tree и
-повторный setup проверены. Для обновления без GitHub egress использован проверенный
-локальный Git bundle. Результаты публикации/восстановления и оставшаяся приемка:
-[ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).
-Её собственный runtime containment не подтверждён: listener там запускать нельзя.
-
 ## Image CVE audit
 
 ```bash
@@ -103,5 +93,4 @@ unused pip/ensurepip. Проверяется прикладной образ; br
 CI инструмент и не поставляется как runtime. Point-in-time evidence:
 [STABLE-ACCEPTANCE.md](STABLE-ACCEPTANCE.md).
 
-Cloud snapshot, описанный выше, остается историческим rc.1/Python 3.12.14.
 Он не является проверенной средой текущего source release/runtime.

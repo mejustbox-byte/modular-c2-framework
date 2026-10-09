@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Run from a Codex Cloud environment containing only this repository.
+# Run from a clean checkout with the pinned project toolchain available.
 set -euo pipefail
-script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+script_dir="$(cd -- "$(dirname -- "$0")" && pwd)"
 cd -- "$script_dir/.."
 bash scripts/check-workspace.sh
 if [[ "$(uv --version)" != 'uv 0.12.24'* ]]; then

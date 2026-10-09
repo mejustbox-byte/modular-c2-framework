@@ -47,7 +47,6 @@ No pending changes.
 - Добавлены роли и lab scope, 60-second validity, replay guard и bounded in-memory аудит.
 - Добавлены 12 unit/negative tests, включая audit failure, capacity и отсутствие OS operations.
 - CI/setup дополнены unit tests; CORE-CONTRACT описывает реализованный контракт и ограничения.
-- Приватная Codex Cloud проверена на setup commit PR #1; новая версия требует отдельной Cloud приемки.
 
 ### Added
 
@@ -68,7 +67,6 @@ No pending changes.
 
 - README описывает учебный изолированный scope и отличает требования от
   реализованных возможностей.
-- INSTALL содержит действующую workspace check, подготовку Codex Cloud,
   проектную конфигурацию, containment acceptance и cleanup requirements.
 - ROADMAP разбит на этапы с проверяемыми критериями завершения.
 - SECURITY дополнен правилами публичного OPSEC и обработки утечки credentials.
