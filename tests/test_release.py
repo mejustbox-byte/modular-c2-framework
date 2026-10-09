@@ -57,6 +57,7 @@ class ReleaseTests(unittest.TestCase):
         self.assertFalse(payload["draft"])
         self.assertEqual(payload["target_commitish"], ENV["GITHUB_SHA"])
         self.assertIn("/blob/v0.1.0/INSTALL.md", payload["body"])
+        self.assertIn("/blob/v0.1.0/STABLE-ACCEPTANCE.md", payload["body"])
 
     def test_existing_same_commit_is_idempotent(self):
         response = {"target_commitish": ENV["GITHUB_SHA"], "prerelease": False, "draft": False}

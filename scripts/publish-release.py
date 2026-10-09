@@ -49,7 +49,7 @@ def main():
         if error.code != 404:
             raise SystemExit(f"Release lookup refused: HTTP {error.code}") from None
     body = Path("RELEASE.md").read_text()
-    for document in ("INSTALL.md", "VALIDATION.md"):
+    for document in ("INSTALL.md", "VALIDATION.md", "STABLE-ACCEPTANCE.md"):
         body = body.replace(
             f"]({document})", f"](https://github.com/{repository}/blob/{tag}/{document})"
         )
