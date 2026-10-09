@@ -35,7 +35,9 @@ evidence and limits: [STABLE-ACCEPTANCE.md](STABLE-ACCEPTANCE.md).
 ## Publication and Cloud scope
 
 Release runs only after all three jobs pass again on the main merge commit.
-The tag and published release must target that tested SHA. Source/installation:
+The v0.1.0 tag and published stable release were read back and match tested
+main SHA `b52f84446734a1a5512d8f4db9ea13445ae8a388`. All four main jobs completed success:
+[37895275757](https://github.com/mejustbox-byte/modular-c2-framework/actions/runs/37895275757). Source/installation:
 [RELEASE.md](RELEASE.md), [INSTALL.md](INSTALL.md).
 
 Cloud remains a development-only workspace with runtime containment unverified;

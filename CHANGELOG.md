@@ -2,7 +2,11 @@
 
 ## Unreleased
 
-- Prepare stable source release 0.1.0 with exact-commit gated publication.
+No pending changes.
+
+## v0.1.0 — 2026-10-09
+
+- Publish stable source release 0.1.0 after all exact-commit CI gates pass.
 - Python 3.12.15, digest-pinned Alpine 3.24 runtime, patched zlib 1.3.2-r1;
   remove unused pip/ensurepip. Bookworm was rejected by the actual CVE audit.
 - Full Trivy 0.75.0 application-image CVE report, CycloneDX SBOM and strict

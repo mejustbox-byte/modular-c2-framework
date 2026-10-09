@@ -1,7 +1,7 @@
 # Source release v0.1.0
 
 Stable source release of the bounded, one-agent educational mock laboratory.
-Python metadata is `0.1.0`; intended tag is `v0.1.0`. The GitHub Releases page
+Python metadata is `0.1.0`; published tag is `v0.1.0`. The GitHub Releases page
 is authoritative for publication status and exact commit. No package upload,
 public server, registry publication or production deployment is included.
 The MIT license and original attribution remain unchanged.

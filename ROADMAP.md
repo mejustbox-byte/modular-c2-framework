@@ -21,7 +21,7 @@ and evidence; release/merge is separate from implementation.
 - [x] Owner authorized merging and a release after acceptance.
 - [x] Real Firefox/native mTLS acceptance and Python 3.12.15 security-patch adoption.
 - [x] Full application-image CVE/SBOM audit and dependency remediation.
-- [ ] Publish stable source release after final merge-commit CI gates.
+- [x] Publish stable source release after final merge-commit CI gates.
 - [x] Update Cloud install/start instructions, republish and verify a new restored task.
 - [x] Test real browser mTLS/visual interaction in CI's isolated namespace, without ports.
 
