@@ -32,10 +32,18 @@ Application image ID:
 `sha256:9091afe786ab8bb503f6a52149565b49a1941a479962bccb7ac44891aec289b0`.
 Audit/SBOM artifact SHA256:
 `b5e7adb68b60fc1e4ab1095895034804ae861674f91bd24fb94ce80ce4b13cd9`.
-The enhanced browser probes initially exceeded the bounded process budget when
-launching concurrent Firefox trees. They now run sequentially; revoked identities
-correctly require HTTP 403 on assets, rather than an authenticated UI. Final CI
-acceptance is still pending.
+Enhanced Firefox probes initially failed with concurrent process trees under
+the bounded test container. Sequential probes now pass, including actual
+HTTP 403 on revoked identities and renewed role-specific UI after regrant.
+
+Final stable-metadata source:
+`a327beb5727294e18ef60c00b50b7311f770b6b0`, run
+[37894625963](https://github.com/mejustbox-byte/modular-c2-framework/actions/runs/37894625963):
+**smoke, container/browser and image-audit all passed**. This includes 34 unit
+tests, five contained integration tests, real mTLS-negative cases, all three
+roles and fresh-session operator/revoked/viewer transitions. Main merge gates
+will run the same checks again before publication.
+
 
 The initial Bookworm image was rejected with 53 HIGH and 2 CRITICAL findings;
 none were suppressed. The later image patches also resolved every detected
