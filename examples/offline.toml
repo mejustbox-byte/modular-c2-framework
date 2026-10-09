@@ -1,0 +1,4 @@
+lab_id = "synthetic-lab"
+max_events = 1000
+max_requests = 1000
+burst = 100

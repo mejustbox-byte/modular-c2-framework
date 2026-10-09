@@ -42,3 +42,12 @@ Codex Cloud опубликована с единственным репозит�
 project/network secrets и с доменами pypi.org/files.pythonhosted.org. Setup на
 commit PR #1 прошёл; новая реализация требует отдельной проверки в этой среде.
 Enforcement сети не подтверждён; лабораторные запуски остаются запрещены.
+
+## Offline workflow: текущая реализация
+
+CLI, строгий TOML config, ephemeral identities с expiry/revocation, bounded
+SQLite journal и restart recovery реализованы. Сетевых компонентов нет.
+Действующие команды и ограничения: [OFFLINE-WORKFLOW.md](OFFLINE-WORKFLOW.md).
+Документы выше про web/API, in-memory-only ограничения и ещё планируемую
+identity/durable audit следует читать с учётом этого реализованного этапа.
+Сетевой transport, membership management и containment всё ещё не готовы.

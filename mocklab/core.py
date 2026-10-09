@@ -56,7 +56,7 @@ class Request:
             return result
 
         try:
-            data = json.loads(payload, object_pairs_hook=unique)
+            data = json.loads(payload.decode("utf-8"), object_pairs_hook=unique)
         except (ValueError, UnicodeError, RecursionError):
             raise LabError("invalid_json") from None
         required = {"schema_version", "request_id", "lab_id", "agent_id", "operation", "issued_at"}
@@ -93,7 +93,16 @@ class Lab:
     automatically. A fresh instance is required when storage fills.
     """
 
-    def __init__(self, lab_id, memberships, *, max_events=1000, max_requests=1000, clock=time.time):
+    def __init__(
+        self,
+        lab_id,
+        memberships,
+        *,
+        max_events=1000,
+        max_requests=1000,
+        clock=time.time,
+        journal=None,
+    ):
         self.lab_id = identifier(lab_id)
         if type(memberships) is not dict or len(memberships) > 100:
             raise LabError("invalid_memberships")
@@ -113,24 +122,90 @@ class Lab:
         self._seen = set()
         self._stopped = False
         self._blocked = False
+        self._journal = journal
+        if journal is not None:
+            if journal.limit != max_events or journal.lab_id != self.lab_id:
+                raise LabError("journal_scope_mismatch")
+            self._events = journal.events()
+            pending = {}
+            for index, event in enumerate(self._events, 1):
+                fields = {
+                    "schema_version",
+                    "event_id",
+                    "timestamp_utc",
+                    "actor_id",
+                    "lab_id",
+                    "request_id",
+                    "agent_id",
+                    "operation",
+                    "outcome",
+                    "reason_code",
+                }
+                if type(event) is not dict or event.keys() != fields:
+                    raise LabError("journal_corrupt")
+                if (
+                    type(event["event_id"]) is not int
+                    or event["event_id"] != index
+                    or type(event["schema_version"]) is not int
+                    or event["schema_version"] != 1
+                ):
+                    raise LabError("journal_corrupt")
+                try:
+                    identifier(event["actor_id"])
+                    identifier(event["reason_code"])
+                    number(event["timestamp_utc"])
+                    if event["request_id"] is not None:
+                        identifier(event["request_id"])
+                    if event["agent_id"] is not None:
+                        identifier(event["agent_id"])
+                    if event["operation"] is not None:
+                        if (
+                            type(event["operation"]) is not str
+                            or event["operation"] not in OPERATIONS
+                        ):
+                            raise LabError("journal_corrupt")
+                except LabError:
+                    raise LabError("journal_corrupt") from None
+                if event.get("lab_id") != self.lab_id:
+                    raise LabError("journal_scope_mismatch")
+                outcome = event.get("outcome")
+                request_id = event.get("request_id")
+                if outcome == "allowed":
+                    identifier(request_id)
+                    if request_id in self._seen:
+                        raise LabError("journal_corrupt")
+                    pending[request_id] = event.get("operation")
+                    self._seen.add(request_id)
+                elif outcome == "completed":
+                    if request_id not in pending or event.get("operation") != pending[request_id]:
+                        raise LabError("journal_corrupt")
+                    del pending[request_id]
+                    if event.get("operation") == "stop":
+                        self._stopped = True
+                elif outcome != "denied":
+                    raise LabError("journal_corrupt")
+            if len(self._seen) > self._max_requests:
+                raise LabError("journal_corrupt")
+            self._blocked = bool(pending)
 
     def _audit(self, actor, request, outcome, reason):
         if len(self._events) >= self._max_events:
             raise LabError("audit_full")
-        self._events.append(
-            {
-                "schema_version": 1,
-                "event_id": len(self._events) + 1,
-                "timestamp_utc": number(self._clock()),
-                "actor_id": actor,
-                "lab_id": self.lab_id,
-                "request_id": request.request_id if request else None,
-                "agent_id": request.agent_id if request else None,
-                "operation": request.operation if request else None,
-                "outcome": outcome,
-                "reason_code": reason,
-            }
-        )
+        event = {
+            "schema_version": 1,
+            "event_id": len(self._events) + 1,
+            "timestamp_utc": number(self._clock()),
+            "actor_id": actor,
+            "lab_id": self.lab_id,
+            "request_id": request.request_id if request else None,
+            "agent_id": request.agent_id if request else None,
+            "operation": request.operation if request else None,
+            "outcome": outcome,
+            "reason_code": reason,
+        }
+        if self._journal is not None:
+            self._journal.append(event)
+        self._events.append(event)
 
     def _record(self, actor, request, outcome, reason):
         try:
