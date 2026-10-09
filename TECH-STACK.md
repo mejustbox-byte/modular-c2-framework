@@ -89,7 +89,7 @@ Docker Engine версию сообщает acceptance log; host runner image о
 без CDN/build dependencies. Container integration отдельна от обычного unit setup.
 См. [API.md](API.md), [VALIDATION.md](VALIDATION.md).
 
-Release metadata: `0.1.0rc1`; Git tag `v0.1.0-rc.1`. Release job получает
+Release metadata: `0.1.0`; Git tag `v0.1.0`. Release job получает
 `contents: write` только для публикации из main после smoke, container/browser и image-audit checks; обычные
 smoke/container jobs сохраняют read-only permissions. См. [RELEASE.md](RELEASE.md).
 
@@ -100,3 +100,6 @@ Alpine 3.24 image для повторной полной CVE и containment/brow
 Firefox 1.63.0 Playwright image используется только как CI test tooling,
 отдельно от прикладного образа; native NSS CA и client certs, без TLS bypass.
 Trivy 0.75.0 binary проверяется SHA256; все HIGH/CRITICAL блокируют выпуск.
+
+Patched runtime zlib 1.3.2-r1; unused pip/ensurepip removed. Current acceptance:
+[STABLE-ACCEPTANCE.md](STABLE-ACCEPTANCE.md). Historical Cloud snapshot is rc.1/3.12.14.

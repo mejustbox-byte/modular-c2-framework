@@ -1,6 +1,7 @@
 # Modular C2 Framework — Mock Lab
 
-Release candidate: **v0.1.0-rc.1** (Python metadata: `0.1.0rc1`).
+Source release metadata: **0.1.0**; Git tag: **v0.1.0**.
+Фактический статус публикации — на GitHub Releases.
 
 Учебная лаборатория управления **только mock-агентом**. Данные синтетические,
 операции фиксированные: `ping`, `status`, `emit_test_event`, `stop`.
@@ -16,6 +17,7 @@ persistence, обхода защиты или работы с реальными
 - Локальный web UI: статус, операции, управление ролями и просмотр аудита.
 - Private bounded SQLite audit; восстановление состояния и fail closed после crash.
 - Offline CLI/menu и строгая TOML конфигурация.
+- Настоящая Firefox/NSS mTLS UI-приемка и полный Trivy CVE audit/SBOM.
 - Docker containment acceptance в CI: network none, non-root, read-only root,
   dropped capabilities, no-new-privileges, tmpfs и resource limits.
 
@@ -55,7 +57,8 @@ VM/namespace с браузером, доверенным lab CA и клиент�
 
 ## Релиз и ограничения
 
-[RELEASE.md](RELEASE.md) описывает состав предварительного релиза, проверки,
-установку из исходников и критерии стабильного выпуска. Проверка UI браузером
-пока не завершена. Результаты повторных проверок и обновления Cloud:
+[RELEASE.md](RELEASE.md) описывает состав source-релиза, проверки и установку.
+Runtime обновлен до Python 3.12.15; браузерный mTLS и image audit входят в CI gates.
+Текущая приемка: [STABLE-ACCEPTANCE.md](STABLE-ACCEPTANCE.md).
+Историческая приемка rc.1 и обновления Cloud:
 [ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).

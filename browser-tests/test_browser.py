@@ -95,36 +95,43 @@ with sync_playwright() as playwright:
             assert len(json.loads(page.locator("#events").inner_text())) > 0
             if actor == "admin":
                 expect(page.locator("#membership")).to_be_visible()
-                page.locator("#target").select_option("viewer")
-                for role in ["operator", "revoke", "viewer"]:
-                    page.locator("#role").select_option(role)
-                    with page.expect_response(ORIGIN + "/api/members") as changed:
-                        page.get_by_role("button", name="Применить", exact=True).click()
-                    assert changed.value.status == 200
-                    expect(page.locator("#result")).to_contain_text("viewer")
-                    probe = launch("viewer-after-" + role, "viewer")
-                    try:
-                        target = probe.pages[0]
-                        target.goto(ORIGIN, timeout=15000)
-                        if role == "revoke":
-                            expect(target.locator("#result")).to_contain_text(
-                                "identity_unavailable"
-                            )
-                            expect(
-                                target.get_by_role("button", name="Статус", exact=True)
-                            ).to_be_disabled()
-                        else:
-                            expect(target.locator("#identity")).to_contain_text(role)
-                            ping = target.get_by_role("button", name="Ping", exact=True)
-                            if role == "operator":
-                                expect(ping).to_be_enabled()
-                            else:
-                                expect(ping).to_be_disabled()
-                    finally:
-                        probe.close()
             page.screenshot(path=str(ROOT / f"{actor}.png"), full_page=True)
             assert not errors, errors
             print(f"Firefox native mTLS UI: {actor} passed", flush=True)
         finally:
             context.close()
+    # Run role probes sequentially so one bounded Firefox process tree is alive.
+    for role in ["operator", "revoke", "viewer"]:
+        context = launch("admin-change-" + role, "admin")
+        try:
+            page = context.pages[0]
+            page.goto(ORIGIN, timeout=15000)
+            expect(page.locator("#identity")).to_contain_text("lab-admin")
+            page.locator("#target").select_option("viewer")
+            page.locator("#role").select_option(role)
+            with page.expect_response(ORIGIN + "/api/members") as changed:
+                page.get_by_role("button", name="Применить", exact=True).click()
+            assert changed.value.status == 200
+            expect(page.locator("#result")).to_contain_text("viewer")
+        finally:
+            context.close()
+        probe = launch("viewer-after-" + role, "viewer")
+        try:
+            target = probe.pages[0]
+            response = target.goto(ORIGIN, timeout=15000)
+            if role == "revoke":
+                assert response.status == 403
+                assert response.json() == {"error": "unauthenticated"}
+                expect(target.get_by_role("heading", name="Mock Lab", exact=True)).to_have_count(0)
+            else:
+                assert response.status == 200
+                expect(target.locator("#identity")).to_contain_text(role)
+                ping = target.get_by_role("button", name="Ping", exact=True)
+                if role == "operator":
+                    expect(ping).to_be_enabled()
+                else:
+                    expect(ping).to_be_disabled()
+        finally:
+            probe.close()
+        print(f"Firefox fresh-session role transition: {role} passed", flush=True)
     print("Real browser acceptance passed; absent client and untrusted CA refused.", flush=True)

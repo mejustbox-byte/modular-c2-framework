@@ -1,4 +1,4 @@
-"""Publish the tested source candidate from its authorized main merge workflow."""
+"""Publish the tested stable source release from its authorized main merge workflow."""
 
 import json
 import os
@@ -21,11 +21,11 @@ def main():
         raise SystemExit("Release context refused")
     version = tomllib.loads(Path("pyproject.toml").read_text())["project"]["version"]
     locked = tomllib.loads(Path("uv.lock").read_text())["package"]
-    if version != "0.1.0rc1" or not any(
+    if version != "0.1.0" or not any(
         p["name"] == "modular-c2-lab" and p["version"] == version for p in locked
     ):
         raise SystemExit("Release version refused")
-    tag = "v0.1.0-rc.1"
+    tag = "v0.1.0"
     base = f"https://api.github.com/repos/{repository}/releases"
     headers = {
         "Authorization": "Bearer " + os.environ["GH_RELEASE_TOKEN"],
@@ -37,7 +37,11 @@ def main():
             urllib.request.Request(f"{base}/tags/{tag}", headers=headers), timeout=30
         ) as response:
             existing = json.load(response)
-        if existing["target_commitish"] != commit or not existing["prerelease"]:
+        if (
+            existing["target_commitish"] != commit
+            or existing["prerelease"]
+            or existing.get("draft", False)
+        ):
             raise SystemExit("Existing release does not match tested commit")
         print("Matching release already published")
         return
@@ -58,10 +62,10 @@ def main():
         {
             "tag_name": tag,
             "target_commitish": commit,
-            "name": "v0.1.0-rc.1 — Isolated Mock Lab",
+            "name": "v0.1.0 — Isolated Mock Lab",
             "body": body,
             "draft": False,
-            "prerelease": True,
+            "prerelease": False,
         }
     ).encode()
     headers["Content-Type"] = "application/json"
@@ -73,9 +77,9 @@ def main():
             result = json.load(response)
     except urllib.error.HTTPError as error:
         raise SystemExit(f"Release publication refused: HTTP {error.code}") from None
-    if result["draft"] or not result["prerelease"] or result["target_commitish"] != commit:
+    if result["draft"] or result["prerelease"] or result["target_commitish"] != commit:
         raise SystemExit("Unexpected release result")
-    print("Release candidate published: " + result["html_url"])
+    print("Stable source release published: " + result["html_url"])
 
 
 if __name__ == "__main__":

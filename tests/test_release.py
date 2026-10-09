@@ -32,12 +32,12 @@ class ReleaseTests(unittest.TestCase):
             release.main()
         api.assert_not_called()
 
-    def test_publishes_prerelease_at_exact_tested_commit(self):
+    def test_publishes_stable_release_at_exact_tested_commit(self):
         response = {
             "draft": False,
-            "prerelease": True,
+            "prerelease": False,
             "target_commitish": ENV["GITHUB_SHA"],
-            "html_url": "https://github.com/mejustbox-byte/modular-c2-framework/releases/tag/v0.1.0-rc.1",
+            "html_url": "https://github.com/mejustbox-byte/modular-c2-framework/releases/tag/v0.1.0",
         }
         with (
             patch.dict(release.os.environ, ENV, clear=True),
@@ -53,13 +53,27 @@ class ReleaseTests(unittest.TestCase):
         ):
             release.main()
         payload = json.loads(api.call_args_list[1].args[0].data)
-        self.assertTrue(payload["prerelease"])
+        self.assertFalse(payload["prerelease"])
         self.assertFalse(payload["draft"])
         self.assertEqual(payload["target_commitish"], ENV["GITHUB_SHA"])
-        self.assertIn("/blob/v0.1.0-rc.1/INSTALL.md", payload["body"])
+        self.assertIn("/blob/v0.1.0/INSTALL.md", payload["body"])
+
+    def test_existing_same_commit_is_idempotent(self):
+        response = {"target_commitish": ENV["GITHUB_SHA"], "prerelease": False, "draft": False}
+        with (
+            patch.dict(release.os.environ, ENV, clear=True),
+            patch.object(
+                release.urllib.request,
+                "urlopen",
+                return_value=io.BytesIO(json.dumps(response).encode()),
+            ) as api,
+            patch("builtins.print"),
+        ):
+            release.main()
+        self.assertEqual(api.call_count, 1)
 
     def test_existing_other_commit_cannot_be_overwritten(self):
-        response = {"target_commitish": "b" * 40, "prerelease": True}
+        response = {"target_commitish": "b" * 40, "prerelease": False}
         with (
             patch.dict(release.os.environ, ENV, clear=True),
             patch.object(

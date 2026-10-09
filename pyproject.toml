@@ -1,6 +1,6 @@
 [project]
 name = "modular-c2-lab"
-version = "0.1.0rc1"
+version = "0.1.0"
 description = "Isolated educational mock-agent laboratory"
 requires-python = ">=3.12.15,<3.13"
 dependencies = []

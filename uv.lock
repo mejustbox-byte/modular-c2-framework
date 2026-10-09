@@ -4,7 +4,7 @@ requires-python = ">=3.12.15, <3.13"
 
 [[package]]
 name = "modular-c2-lab"
-version = "0.1.0rc1"
+version = "0.1.0"
 source = { virtual = "." }
 
 [package.dev-dependencies]

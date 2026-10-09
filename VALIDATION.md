@@ -1,53 +1,45 @@
 # Validation and acceptance
 
-## Local checks
+## Development checks
 
-CPython 3.12.14: 33 tests (30 core/CLI/API and 3 release-publication tests),
-4 development smoke checks,
-Ruff 0.16.10 lint/format, shell syntax and whitespace checks passed.
-No listener started in the ordinary workspace. Core and dispatch tests are in-process.
+CPython 3.12.15: 34 unit/negative/CLI/API/recovery/publication tests, 4 smoke
+checks, Ruff 0.16.10 lint/format, shell syntax and whitespace checks pass locally.
+No server listener starts in the ordinary workspace; startup refusal is expected.
 
-## Container acceptance
+## Container and real browser checks
 
-GitHub Actions performs a separate Docker job: build digest-pinned Python image,
-inspect network none/non-root/read-only/capabilities/ports/mounts/resource bounds,
-provision one-day synthetic PKI into private tmpfs, then run contained integration.
+CI builds the digest-pinned Python 3.12.15 Alpine runtime, verifies network none,
+non-root/read-only/capability/port/mount/resource limits before listener startup,
+and provisions disposable synthetic PKI into private tmpfs. Five integration
+tests cover IPv4/IPv6/DNS-port UDP egress refusal to documentation-only addresses,
+mTLS refusal without certificate, assets, Host, RBAC, lab scope, replay,
+management/revocation, lifecycle, audit/restart recovery and listener cleanup.
 
-Tests: egress refusal to documentation-only IPv4/IPv6 addresses (TCP and DNS-port UDP),
-mTLS refusal without certificate, UI asset delivery, Host validation, RBAC, lab scope,
-replay, management/revocation, mock lifecycle, audit, restart recovery and listener cleanup.
-Certificate validity is also enforced by OpenSSL; application expiry tested in-process.
+Real headless Firefox runs in a separate pinned test container sharing only the
+application network namespace. Native NSS imports the lab CA and each client
+identity. HTTPS validation stays enabled. Tests refuse absent client identity
+and an untrusted CA, render actual assets/JS, verify viewer/operator/admin
+controls, exercise status/audit, and validate role changes and access revocation
+through fresh browser sessions. Screenshots are CI artifacts; PKI is not exported.
+Desktop screenshots were visually inspected for all controls and audit output.
 
-All five contained integration tests passed in GitHub Actions run
-[37889473519](https://github.com/mejustbox-byte/modular-c2-framework/actions/runs/37889473519)
-on 2026-10-09. Smoke/unit/lint job passed as well. Provisioning failures were
-corrected by streaming selected fixture files into private tmpfs through the
-unprivileged container process, without relaxing storage/network controls.
-The CA signing key stays on the fixture host and is not transferred to the container.
+## CVE and SBOM audit
 
-## Scope of completion
+Checksum-pinned Trivy 0.75.0 scans the complete application image and writes
+full CVE JSON plus CycloneDX SBOM. All HIGH/CRITICAL findings block release,
+including unfixed findings. No ignore file or suppression is used. Bookworm
+was rejected with 53 HIGH and 2 CRITICAL findings. Alpine plus the zlib patch
+and removal of unused pip resolves the remaining detected findings. Exact scan
+evidence and limits: [STABLE-ACCEPTANCE.md](STABLE-ACCEPTANCE.md).
 
-Implementation scope: one-agent educational mock MVP, offline CLI, in-process core,
-loopback mTLS API, local UI, roles, durable audit, containment acceptance scripts and CI.
-Production scale, real agents, public hosting and arbitrary execution are excluded.
+## Publication and Cloud scope
 
-Browser visual/mTLS testing in a user-managed isolated VM is not claimed by HTTP asset
-acceptance. CI validates API/asset behavior. Codex Cloud remains a development-only
-workspace with independent containment unverified; no listener runs there. Its setup
-was updated to the exact release commit using a verified local Git bundle, without
-network-policy expansion. Repeated setup passed 33 tests, 4 smoke, lint/format, CLI
-and expected server refusal. Publication/restoration status and runtime review:
-[ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).
-Release candidate v0.1.0-rc.1 was published after successful main-commit
-smoke/container jobs. The tag and release target were read back and match
-c27150a2c0fa3280208f0efe8afa9adb3178a4da. This is not stable/production acceptance.
+Release runs only after all three jobs pass again on the main merge commit.
+The tag and published release must target that tested SHA. Source/installation:
+[RELEASE.md](RELEASE.md), [INSTALL.md](INSTALL.md).
 
-## Stable promotion checks under implementation
-
-The development runtime is Python 3.12.15. Trivy 0.75.0 produces full CVE JSON
-and CycloneDX SBOM; all HIGH/CRITICAL findings block publication, including
-unfixed findings. A pinned Firefox image shares only the inspected application
-network namespace. Native NSS trusts the disposable CA and imports each client
-identity. Tests require refusal without identity or with an untrusted CA and
-verify viewer/operator/admin UI, audit and role changes. No TLS bypass or port
-publishing is enabled. These new checks are not yet recorded as passed.
+Cloud remains a development-only workspace with runtime containment unverified;
+no listener runs there. Its independently restored published snapshot was rc.1,
+Python 3.12.14. Historical evidence: [ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).
+These old results do not claim current Cloud restoration. Browser and CVE
+acceptance now run separately in CI, without expanding the Cloud allowlist.
