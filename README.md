@@ -1,7 +1,7 @@
 # Modular C2 Framework — Mock Lab
 
-Source release metadata: **0.1.0**; Git tag: **v0.1.0**.
-Фактический статус публикации — на GitHub Releases.
+Стабильный source-релиз: [v0.1.0](https://github.com/mejustbox-byte/modular-c2-framework/releases/tag/v0.1.0), опубликован 2026-10-09.
+Python metadata: `0.1.0`; проверенные tag/release указывают на точный main commit.
 
 Учебная лаборатория управления **только mock-агентом**. Данные синтетические,
 операции фиксированные: `ping`, `status`, `emit_test_event`, `stop`.

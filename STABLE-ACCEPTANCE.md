@@ -1,7 +1,7 @@
 # Stable source promotion acceptance — 2026-10-09
 
-Scope: one synthetic mock agent only. Source metadata `0.1.0` is prepared for
-stable publication; GitHub Releases is authoritative for the published tag/SHA.
+Scope: one synthetic mock agent only. Stable source release `v0.1.0` is published.
+GitHub release and tag were independently read back and match the tested SHA.
 
 ## Runtime and containment
 
@@ -73,9 +73,20 @@ Python 3.12.14; current runtime evidence is local and CI, not a new Cloud restor
 Cloud runtime containment is unverified and no lab listener runs there.
 No public deployment, real agent or arbitrary command capability is included.
 
-## Publication
+## Published release and final main evidence
 
-Publication has not yet been claimed in this report. A main merge title beginning
-`Release v` runs the stable-release job only after smoke, container/browser and
-image-audit success. The release notes append the exact tested SHA and CI URL.
-The release/tag must then be read back before reporting publication complete.
+[Stable v0.1.0](https://github.com/mejustbox-byte/modular-c2-framework/releases/tag/v0.1.0) published at `2026-10-09T06:47:33Z`.
+Both release target and Git tag point to tested main merge commit
+`b52f84446734a1a5512d8f4db9ea13445ae8a388`. API confirms `draft=false`, `prerelease=false`.
+
+[Main release CI](https://github.com/mejustbox-byte/modular-c2-framework/actions/runs/37895275757):
+smoke, container/browser, image-audit and stable publication all completed success.
+Full final main audit artifact was downloaded and digest verified. Its JSON
+contains **0 detected CVEs at every severity** across 38 Alpine 3.24.2 packages.
+Image ID: `sha256:767a01637331f2a0468a3c71c27500596ced83a0f8533618cb82e424affbe6bc`.
+Audit/SBOM artifact SHA256: `719868e4d625bcf80dc84e03a733e2b10bdfc35259909d757019bf2c6e3ca98c`.
+
+- [browser-acceptance](https://github.com/mejustbox-byte/modular-c2-framework/actions/runs/37895275757/artifacts/11600156632): `sha256:52820363bc57255c005f2e6acb1490c07acd90944a08ae395e606b28c8112bff`.
+- [image-security-audit](https://github.com/mejustbox-byte/modular-c2-framework/actions/runs/37895275757/artifacts/11599069467): `sha256:719868e4d625bcf80dc84e03a733e2b10bdfc35259909d757019bf2c6e3ca98c`.
+
+This publication does not change the historical Cloud snapshot or enable public hosting.
