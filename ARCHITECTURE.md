@@ -2,7 +2,8 @@
 
 ## Статус и границы
 
-Это проектная архитектура учебного MVP. Runtime-компоненты не реализованы.
+Это проектная архитектура сетевого учебного MVP. Реализован только network-free
+core; transport, UI и durable audit отсутствуют.
 Лаборатория работает с mock-агентами, фиксированными операциями и synthetic
 fixtures. Реальных targets и интеграций с production нет.
 
@@ -96,3 +97,19 @@ append-only режим не гарантирует защиту от админ�
 Egress deny обеспечивается внешней политикой среды; приложение не может
 самостоятельно доказать отсутствие маршрутов. Проверки сети используют только
 контролируемые тестовые endpoints и не обращаются к третьим сторонам.
+
+## Реализованный этап: network-free core
+
+Добавлен `mocklab` для in-process unit tests: фиксированные операции, строгий
+JSON envelope, lab-scoped роли, replay guard и bounded in-memory аудит.
+Действующий контракт и ограничения описаны в [CORE-CONTRACT.md](CORE-CONTRACT.md).
+Предыдущие разделы про transport, authentication, durable audit и deployment
+остаются проектными требованиями. Сетевые компоненты не реализованы.
+
+Проверка: `uv run --locked --offline python -m unittest discover -s tests -v`.
+Setup и CI запускают этот набор вместе с development smoke и Ruff.
+
+Codex Cloud опубликована с единственным репозиторием, доступом «Только я», без
+project/network secrets и с доменами pypi.org/files.pythonhosted.org. Setup на
+commit PR #1 прошёл; новая реализация требует отдельной проверки в этой среде.
+Enforcement сети не подтверждён; лабораторные запуски остаются запрещены.

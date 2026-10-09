@@ -72,3 +72,19 @@ Codex Cloud считается проверенным только после з
 - [uv project workflow](https://docs.astral.sh/uv/guides/projects/).
 - [Ruff](https://docs.astral.sh/ruff/).
 - [Codex Cloud](https://learn.chatgpt.com/docs/cloud).
+
+## Реализованный этап: network-free core
+
+Добавлен `mocklab` для in-process unit tests: фиксированные операции, строгий
+JSON envelope, lab-scoped роли, replay guard и bounded in-memory аудит.
+Действующий контракт и ограничения описаны в [CORE-CONTRACT.md](CORE-CONTRACT.md).
+Предыдущие разделы про transport, authentication, durable audit и deployment
+остаются проектными требованиями. Сетевые компоненты не реализованы.
+
+Проверка: `uv run --locked --offline python -m unittest discover -s tests -v`.
+Setup и CI запускают этот набор вместе с development smoke и Ruff.
+
+Codex Cloud опубликована с единственным репозиторием, доступом «Только я», без
+project/network secrets и с доменами pypi.org/files.pythonhosted.org. Setup на
+commit PR #1 прошёл; новая реализация требует отдельной проверки в этой среде.
+Enforcement сети не подтверждён; лабораторные запуски остаются запрещены.

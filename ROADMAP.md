@@ -1,6 +1,6 @@
 # Roadmap
 
-Чекбокс означает проверенный результат, а не обещание. Runtime пока отсутствует.
+Чекбокс означает проверенный результат, а не обещание. Добавлен network-free core; сетевой runtime отсутствует.
 
 ## 0. Подготовка разработки
 
@@ -10,20 +10,20 @@
 - [x] Стек зафиксирован в TECH-STACK.md с runtime/tool pins и lockfile.
 - [x] Offline development smoke, lint и форматирование прошли в текущем workspace.
 - [x] CI workflow выполнен на GitHub: push и pull_request checks прошли.
-- [ ] Среда Codex Cloud опубликована и задача в ней успешно проверена.
+- [x] Codex Cloud опубликована и setup commit PR #1 проверен; новая ветка требует перепроверки.
 
 ## 1. Контракт событий и конфигурации
 
 - [ ] Реализовать строгую схему envelope, версии и фиксированные операции.
-- [ ] Описать lifecycle, окно replay и идемпотентность request ID.
-- [ ] Реализовать fail-closed validation и безопасные diagnostics.
+- [x] Описан in-process lifecycle и отказ повторов ID в CORE-CONTRACT.md.
+- [x] Строгая envelope validation и фиксированные reason codes в mock core.
 
 Готово, когда malformed input, неизвестные операции, URL/пути и избыточные
 payload отклоняются; schema tests проходят, секреты не попадают в сообщения.
 
 ## 2. Mock-agent и loopback
 
-- [ ] In-memory mock-agent с synthetic fixtures и `ping/status/emit_test_event/stop`.
+- [x] In-memory mock-agent с synthetic fixtures и `ping/status/emit_test_event/stop`.
 - [ ] Listener и API только на loopback в одной изолированной VM/namespace.
 - [ ] Ограничения количества агентов, событий, размера сообщений и очереди.
 
@@ -61,3 +61,5 @@ payload отклоняются; schema tests проходят, секреты н
 
 Скрытность, persistence, обход защиты и неограниченное выполнение команд
 исключены на всех этапах.
+
+Следующий шаг: transport authentication и durable audit, затем проверенный containment.

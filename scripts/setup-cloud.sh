@@ -10,5 +10,6 @@ if [[ "$(uv --version)" != 'uv 0.12.24'* ]]; then
 fi
 uv sync --locked
 uv run --locked --offline python scripts/smoke.py
+uv run --locked --offline python -m unittest discover -s tests -v
 uv run --locked --offline ruff check .
 uv run --locked --offline ruff format --check .

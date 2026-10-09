@@ -6,10 +6,11 @@
 
 ## Статус
 
-Сейчас репозиторий содержит документацию, инструкции для Codex, read-only
-проверку рабочего дерева и offline development smoke/CI. Teamserver, listener, mock-agent, RBAC, UI и runtime
-аудит ещё не реализованы. Loopback, egress deny и containment ниже описаны как
-обязательные требования будущей лаборатории, а не как действующие гарантии.
+Реализовано первое сетево-независимое ядро `mocklab`: один synthetic mock-agent,
+строгий envelope, роли viewer/operator/lab-admin, lab scope, replay protection и
+ограниченный in-memory аудит. Нет listener, API, UI, аутентификации transport или
+контейнерной лаборатории. Полная изоляция сети ещё не подтверждена; лабораторные
+сервисы запускать нельзя. Unit tests не открывают порты.
 
 ## Учебный scope
 
@@ -79,3 +80,13 @@ bash scripts/check-workspace.sh
 Ruff 0.16.10; CI — GitHub Actions. Контейнеризация Linux с Docker/Compose v2
 запланирована, лабораторного образа пока нет. Обоснование, version pins и
 критерии проверки — в [TECH-STACK.md](TECH-STACK.md).
+
+## Проверка mock-ядра
+
+```bash
+uv run --locked --offline python -m unittest discover -s tests -v
+```
+
+Контракт и ограничения: [CORE-CONTRACT.md](CORE-CONTRACT.md).
+Identity задаёт доверенный in-process адаптер; клиентские `role`/`actor_id`
+в envelope отклоняются. Это не готовая authentication boundary сетевого сервера.
