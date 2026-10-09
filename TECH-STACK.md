@@ -92,3 +92,7 @@ Docker Engine версию сообщает acceptance log; host runner image о
 Release metadata: `0.1.0rc1`; Git tag `v0.1.0-rc.1`. Release job получает
 `contents: write` только для публикации из main после обоих checks; обычные
 smoke/container jobs сохраняют read-only permissions. См. [RELEASE.md](RELEASE.md).
+
+Повторная приемка 2026-10-09 и advisory review: [ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).
+Python 3.12.15 — опубликованный security patch; до stable требуется его adoption
+и повторная проверка, текущий source candidate сохраняет исходный pin 3.12.14.
