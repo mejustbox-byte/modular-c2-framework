@@ -32,16 +32,9 @@ was rejected with 53 HIGH and 2 CRITICAL findings. Alpine plus the zlib patch
 and removal of unused pip resolves the remaining detected findings. Exact scan
 evidence and limits: [STABLE-ACCEPTANCE.md](STABLE-ACCEPTANCE.md).
 
-## Publication and Cloud scope
+## Publication
 
-Release runs only after all three jobs pass again on the main merge commit.
-The v0.1.0 tag and published stable release were read back and match tested
-main SHA `b52f84446734a1a5512d8f4db9ea13445ae8a388`. All four main jobs completed success:
-[37895275757](https://github.com/mejustbox-byte/modular-c2-framework/actions/runs/37895275757). Source/installation:
-[RELEASE.md](RELEASE.md), [INSTALL.md](INSTALL.md).
-
-Cloud remains a development-only workspace with runtime containment unverified;
-no listener runs there. Its independently restored published snapshot was rc.1,
-Python 3.12.14. Historical evidence: [ACCEPTANCE-2026-10-09.md](ACCEPTANCE-2026-10-09.md).
-These old results do not claim current Cloud restoration. Browser and CVE
-acceptance now run separately in CI, without expanding the Cloud allowlist.
+Release runs only after all required checks pass on the main merge commit.
+The published tag, source assets, checksums, and workflow results are verified
+against the reviewed source revision. See [RELEASE.md](RELEASE.md) and
+[INSTALL.md](INSTALL.md) for reproducible commands.
